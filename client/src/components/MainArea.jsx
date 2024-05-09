@@ -13,10 +13,8 @@ const MainArea = ({additionalClass}) => {
     <div className={`flex flex-col h-full ${additionalClass} bg-slate-100 px-4`}>
        {/* nav */}
        <div className='bg-white p-3 mt-5 rounded-xl flex justify-between shadow'>
-        <div className='flex items-center'>
-          <IconButton>
-            <AccountCircleIcon className='text-slate-500' />
-          </IconButton>
+        <div className='flex items-center gap-2 cursor-pointer'>
+          <AccountCircleIcon className='text-slate-500' />
           <div className='flex flex-col'>
             <h1 className='font-semibold'>John Doe</h1>
             <p className='text-xs'>online</p>
@@ -31,11 +29,15 @@ const MainArea = ({additionalClass}) => {
 
       <div className='flex-1 bg-white mt-3 rounded-xl shadow px-3 overflow-auto'>
         <div className='flex flex-col-reverse h-full'>
-          <div className='overflow-y-auto'>
+          <div className='overflow-y-auto flex flex-col gap-1 px-3 py-5'>
             {/* start loop here */}
               <MessageOthers />
               <MessageSelf />
-
+              <MessageOthers />
+              <MessageSelf />
+              <MessageSelf />
+              <MessageOthers />
+              <MessageOthers />
             {/* end loop here */}
           </div>
         </div>
