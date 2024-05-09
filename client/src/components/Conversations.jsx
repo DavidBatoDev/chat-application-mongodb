@@ -1,15 +1,12 @@
 import React from 'react'
 import Conversation from './Conversation';
 
-const Conversations = () => {
+const Conversations = ({users}) => {
   return (
     <div className='flex flex-col'>
-        <Conversation />
-        <Conversation />
-        <Conversation />
-        <Conversation />
-        <Conversation />
-        <Conversation />
+        {users.map((user, index) => (
+            <Conversation key={index} user={user} />
+        ))}
     </div>
   )
 }

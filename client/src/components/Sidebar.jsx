@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Conversations from './Conversations';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -8,6 +8,34 @@ import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 
 const Sidebar = ({additionalClass}) => {
+  const [users, setUsers] = useState([])
+  const mockUsers = [
+    {
+      name: 'John Doe',
+      lastMessage: 'Hello, how are you?',
+      timeStamp: 'today'
+    },
+    {
+      name: 'Jane Doe',
+      lastMessage: 'Hello, how are you?',
+      timeStamp: 'yesterday'
+    },
+    {
+      name: 'John Smith',
+      lastMessage: 'Hello, how are you?',
+      timeStamp: '2 days ago'
+    },
+    {
+      name: 'Jane Smith',
+      lastMessage: 'Hello, how are you?',
+      timeStamp: '3 days ago'
+    }
+  ]
+
+  useEffect(() => {
+    setUsers(mockUsers)
+  }, [])
+
   return (
     <div className={`h-full bg-slate-300 ${additionalClass}`}>
       {/* nav */}
@@ -37,7 +65,7 @@ const Sidebar = ({additionalClass}) => {
         </div>
       </div>
       {/* friend-list */}
-      <Conversations />
+      <Conversations users={users} />
     </div>
   )
 }
