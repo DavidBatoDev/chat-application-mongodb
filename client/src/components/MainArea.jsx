@@ -4,7 +4,8 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SendIcon from '@mui/icons-material/Send';
 import { IconButton } from '@mui/material';
 import NoConvoOpen from './NoConvoOpen';
-import Message from './Message';
+import MessageOthers from './MessageOthers';
+import MessageSelf from './MessageSelf';
 
 
 const MainArea = ({additionalClass}) => {
@@ -32,19 +33,9 @@ const MainArea = ({additionalClass}) => {
         <div className='flex flex-col-reverse h-full'>
           <div className='overflow-y-auto'>
             {/* start loop here */}
-              <Message />
+              <MessageOthers />
+              <MessageSelf />
 
-              <div className={`flex items-center my-3 w-full justify-end`}>
-                <div className={`flex flex-row-reverse justify-start items-center`}>
-                  {/* <IconButton>
-                    <AccountCircleIcon className='text-slate-500' />
-                  </IconButton> */}
-                  <div className='flex flex-col bg-slate-300 p-3 rounded-xl min-w-14 max-w-40 md:max-w-72 lg:max-w-96'>
-                    {/* <h1 className='font-semibold'>John Doe</h1> */}
-                    <p className={`flex justify-end text-sm md:text-md text-wrap break-words`}>I'm fine</p>
-                  </div>
-                </div>
-              </div>
             {/* end loop here */}
           </div>
         </div>

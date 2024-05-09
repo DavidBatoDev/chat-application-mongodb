@@ -2,7 +2,7 @@ import React from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { IconButton } from '@mui/material';
 
-const Message = ({user}) => {
+const MessageOthers = ({user}) => {
   return (
     <div className={`flex items-center my-3 w-full`}>
         <div className={`flex flex-row items-center`}>
@@ -18,4 +18,4 @@ const Message = ({user}) => {
   )
 }
 
-export default Message
+export default MessageOthers
