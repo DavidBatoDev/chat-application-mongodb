@@ -8,7 +8,7 @@ import MessageSelf from './MessageSelf';
 
 const ChatArea = () => {
   return (
-    <>
+    <div className={`flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
     <div className='bg-white p-3 mt-5 rounded-xl flex justify-between shadow'>
      <div className='flex items-center gap-2 cursor-pointer'>
        <AccountCircleIcon className='text-slate-500' />
@@ -58,7 +58,7 @@ const ChatArea = () => {
        <SendIcon className='text-slate-500' />
      </IconButton>
    </div>
-   </>
+   </div>
   )
 }
 
