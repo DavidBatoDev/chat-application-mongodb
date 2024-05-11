@@ -2,10 +2,10 @@ import React from 'react'
 import Sidebar from './Sidebar'
 import { Outlet } from 'react-router-dom'
 
-const MainContainer = () => {
+const MainContainer = ({darkMode}) => {
   return (
     <div className='relative bg h-[90vh] w-[90vw] bg-white rounded-3xl flex shadow-lg overflow-hidden'>
-        <Sidebar additionalClass='flex-[0.3]' />
+        <Sidebar darkMode={darkMode} />
         <Outlet />
     </div>
   )

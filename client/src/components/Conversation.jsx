@@ -3,7 +3,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const Conversation = ({user, onClick}) => {
   return (
-    <div className='flex items-center px-5 py-3 gap-2 hover:bg-slate-200 cursor-pointer' onClick={onClick}>
+    <div className='active:bg-slate-200 flex items-center px-5 py-3 gap-2 hover:bg-slate-200 cursor-pointer' onClick={onClick}>
         <AccountCircleIcon className='text-slate-500' />
         <div>
             <h1 className='text-md font-semibold'>{user.name}</h1>

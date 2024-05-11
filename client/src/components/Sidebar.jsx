@@ -9,7 +9,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import MailLockIcon from '@mui/icons-material/MailLock';
 
-const Sidebar = ({additionalClass}) => {
+const Sidebar = ({darkMode}) => {
   const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const mockUsers = [
@@ -40,9 +40,9 @@ const Sidebar = ({additionalClass}) => {
   }, [])
 
   return (
-    <div className={`h-full bg-slate-300 ${additionalClass}`}>
+    <div className={`h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
       {/* nav */}
-      <nav className='flex  justify-between my-5 mx-3 rounded-xl p-3 bg-white'>
+      <nav className={`${darkMode && 'dark-primary'} flex justify-between my-5 mx-3 rounded-xl p-3 bg-white`}>
         <div>
           <IconButton>
             <AccountCircleIcon className='text-slate-500' />
