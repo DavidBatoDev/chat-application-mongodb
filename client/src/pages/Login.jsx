@@ -2,7 +2,7 @@ import React from 'react'
 
 const Login = () => {
   return (
-    <div className='h-full w-full flex justify-center items-center bg-white'>
+    <div className='h-full w-full flex justify-center items-center bg-slate-200'>
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
         <div className='flex-1 flex flex-col justify-center items-center rounded'>
           <img 

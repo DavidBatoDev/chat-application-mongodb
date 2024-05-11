@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import Conversations from './Conversations';
+import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import GroupsIcon from '@mui/icons-material/Groups';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
+import MailLockIcon from '@mui/icons-material/MailLock';
 
 const Sidebar = ({additionalClass}) => {
+  const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const mockUsers = [
     {
@@ -46,13 +49,13 @@ const Sidebar = ({additionalClass}) => {
           </IconButton>
         </div>
         <div className='flex items-center'>
-          <IconButton>
+          <IconButton onClick={() => navigate('users')}>
             <PersonAddIcon className='text-slate-500' />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => navigate('groups')}>
             <GroupsIcon className='text-slate-500' />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={() => navigate('create-group')}>
             <AddCircleIcon className='text-slate-500' />
           </IconButton>
         </div>

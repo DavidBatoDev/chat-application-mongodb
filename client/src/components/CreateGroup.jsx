@@ -5,7 +5,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const CreateGroup = () => {
   return (
-    <div className='flex flex-col gap-2 mt-2 h-full'>
+    <div className={`flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
+    <div className='flex flex-col gap-2 mt-2 h-full w-full'>
         <div className='flex justify-between w-full bg-white mt-3 rounded-xl py-2 shadow-sm'>
             <input 
                 type="text" 
@@ -50,6 +51,7 @@ const CreateGroup = () => {
                 </div>
             </div>
         </div>
+    </div>
     </div>
   )
 }
