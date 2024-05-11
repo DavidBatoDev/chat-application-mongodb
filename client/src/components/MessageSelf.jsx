@@ -1,6 +1,8 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
-const MessageSelf = ({darkMode}) => {
+const MessageSelf = () => {
+  const {darkMode} = useSelector(state => state.theme)
   return (
     <div className={`flex items-center my-3 w-full justify-end`}>
     <div className={`flex flex-row-reverse justify-start items-center`}>

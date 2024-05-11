@@ -1,12 +1,15 @@
 import React from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
+import { useSelector } from 'react-redux';
 
 const Users = () => {
+    const {darkMode} = useSelector(state => state.theme)
+
   return (
-    <div className={`flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
+    <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
     <div className='flex flex-col gap-1 mt-2 w-full h-full'>
-        <div className='flex justify-between w-full bg-white mt-3 py-2 border-b-2'>
+        <div className={`${darkMode && 'dark-primary'} flex justify-between w-full bg-white mt-3 py-2 rounded-xl`}>
             <h1 className='p-3 font-semibold'>
                 Add Public Users
             </h1>
@@ -19,7 +22,7 @@ const Users = () => {
         </div>
 
       </div>
-        <div className='bg-white flex-1 mb-3 rounded-xl p-3 pt-0'>
+        <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3 pt-0`}>
             <div className='flex flex-col overflow-auto mt-1 mb-3'>
                 <div className='flex items-center py-3 border-b-2'>
                     <div className='flex items-center gap-2'>

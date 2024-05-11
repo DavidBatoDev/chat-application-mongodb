@@ -7,9 +7,11 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
-import MailLockIcon from '@mui/icons-material/MailLock';
+import { useSelector } from 'react-redux';
 
-const Sidebar = ({darkMode}) => {
+const Sidebar = () => {
+  const {darkMode} = useSelector(state => state.theme)
+
   const navigate = useNavigate()
   const [users, setUsers] = useState([])
   const mockUsers = [

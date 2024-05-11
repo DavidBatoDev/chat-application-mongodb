@@ -5,8 +5,11 @@ import SendIcon from '@mui/icons-material/Send';
 import { IconButton } from '@mui/material';
 import MessageOthers from './MessageOthers';
 import MessageSelf from './MessageSelf';
+import { useSelector } from 'react-redux';
 
-const ChatArea = ({darkMode}) => {
+const ChatArea = () => {
+  const {darkMode} = useSelector(state => state.theme)
+
   return (
     <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
       <div className={`${darkMode && 'dark-primary'} bg-white p-3 mt-5 rounded-xl flex justify-between shadow`}>
@@ -33,18 +36,18 @@ const ChatArea = ({darkMode}) => {
                 display: 'none' 
               }
             }} className='overflow-y-auto flex  flex-col gap-1 px-3 py-5'>
-            <MessageOthers darkMode={darkMode} />
-            <MessageSelf darkMode={darkMode} />
-            <MessageOthers darkMode={darkMode} />
-            <MessageSelf darkMode={darkMode} />
-            <MessageSelf darkMode={darkMode} />
-            <MessageOthers darkMode={darkMode} />
-            <MessageOthers darkMode={darkMode} />
+            <MessageOthers />
+            <MessageSelf />
+            <MessageOthers />
+            <MessageSelf />
+            <MessageSelf />
+            <MessageOthers />
+            <MessageOthers />
         </div>
       </div>
     </div>
 
-    <div className='flex items-center my-3 shadow p-3 rounded-xl overflow-hidden w-full bg-white'>
+    <div className={`${darkMode && 'dark-primary'} flex items-center my-3 shadow p-3 rounded-xl overflow-hidden w-full bg-white`}>
       <textarea type="text" placeholder='Message...' 
         style={{
           scrollbarWidth: 'none',
@@ -53,7 +56,7 @@ const ChatArea = ({darkMode}) => {
             display: 'none' 
           }
         }}
-        className='flex-1 h-10 resize-none text-wrap py-3 outline-none overflow-visible' />
+        className={`bg-transparent flex-1 h-10 resize-none text-wrap py-3 outline-none overflow-visible`} />
       <IconButton>
         <SendIcon className='text-slate-500' />
       </IconButton>

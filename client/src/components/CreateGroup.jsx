@@ -2,12 +2,14 @@ import React from 'react'
 import SendIcon from '@mui/icons-material/Send';
 import { IconButton } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useSelector } from 'react-redux';
 
 const CreateGroup = () => {
+    const {darkMode} = useSelector(state => state.theme)
   return (
-    <div className={`flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
+    <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
     <div className='flex flex-col gap-2 mt-2 h-full w-full'>
-        <div className='flex justify-between w-full bg-white mt-3 rounded-xl py-2 shadow-sm'>
+        <div className={`${darkMode && 'dark-primary'} flex justify-between w-full bg-white mt-3 rounded-xl py-2 shadow-sm`}>
             <input 
                 type="text" 
                 placeholder='Enter Group Name..'
@@ -17,7 +19,7 @@ const CreateGroup = () => {
                 <SendIcon />
             </IconButton>
         </div>
-        <div className='bg-white flex-1 mb-3 rounded-xl p-3'>
+        <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3`}>
             <h1 className='font-semibold text-xl text-gray-400 w-full border-0 border-b-2'>
                 Add members
             </h1>

@@ -1,8 +1,10 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 const Login = () => {
+  const {darkMode} = useSelector(state => state.theme)
   return (
-    <div className='h-full w-full flex justify-center items-center bg-slate-200'>
+    <div className={`${darkMode && 'dark-primary'} h-full w-full flex justify-center items-center bg-slate-200`}>
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
         <div className='flex-1 flex flex-col justify-center items-center rounded'>
           <img 
@@ -10,10 +12,10 @@ const Login = () => {
             alt="Logo"
             className='md:w-72 md:h-72 h-56 w-56'
             />
-          <h1 className='text-3xl font-semibold text-blue-700'>
+          <h1 className={`${darkMode && 'text-blue-300'} text-3xl font-semibold text-blue-700`}>
             Full stack chat app
           </h1>
-          <p className='texx-md text-gray-700'>
+          <p className={`${darkMode && 'text-white'} text-md text-gray-700`}>
             Login to start chatting
           </p>
         </div>
@@ -21,7 +23,7 @@ const Login = () => {
         <div className='flex-1 flex justify-center items-center p-3'>
           <form className='md:shadow-2xl md:h-[70%] w-[90%] md:bg-white rounded-xl flex justify-center items-center'>
             <div className='flex flex-col justify-center items-center w-full'>
-              <h1 className='text-2xl font-semibold text-blue-700 mb-4'>
+              <h1 className={`${darkMode && 'text-blue-300'} text-2xl font-semibold text-blue-700 mb-4`}>
                 Start Chatting!
               </h1>
               <input 
@@ -40,7 +42,7 @@ const Login = () => {
                 Login
               </button>
               <p>
-                Don't have an account? <a href='#' className='text-blue-500'>Register</a>
+                Don't have an account? <a href='#' className={`${darkMode && 'text-blue-300'} text-blue-700`}>Register</a>
               </p>
             </div>
           </form>

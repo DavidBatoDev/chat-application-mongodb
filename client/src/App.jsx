@@ -11,26 +11,31 @@ import Groups from './components/Groups'
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import {IconButton } from '@mui/material'
+import { useSelector, useDispatch } from 'react-redux'
+import { toggleTheme } from './redux/themeSlice/themeSlice'
 
 const App = () => {
-  const [darkMode, setDarkMode] = useState(true)
+  const dispatch = useDispatch()
+  const { darkMode } = useSelector(state => state.theme)
 
   return (
     <BrowserRouter>
       <div className={`${darkMode && 'dark-primary'} relative bg-slate-200 h-screen w-screen flex justify-center items-center`}>
         <div className='fixed top-1 right-5'>
-          <IconButton onClick={() => setDarkMode(prevState => !prevState)}>
+          <IconButton onClick={() => dispatch(toggleTheme())}>
             {
-            darkMode ? <WbSunnyIcon className='text-slate-500 text-6xl' /> :
-            <DarkModeIcon className='text-slate-500 text-6xl' />
+            darkMode ? 
+              <WbSunnyIcon className='text-slate-500 text-6xl' /> 
+              :
+              <DarkModeIcon className='text-slate-500 text-6xl' />
             }
           </IconButton>        
         </div>
         <Routes>
         <Route path='/' element={<Login />} />
           <Route path='/login' element={<Login />} />
-          <Route path='app' element={<MainContainer darkMode={darkMode} />}>
-            <Route path='chat' element={<ChatArea darkMode={darkMode} />}/>
+          <Route path='app' element={<MainContainer />}>
+            <Route path='chat' element={<ChatArea />}/>
             <Route path='' element={<NoConvoOpen />}/>
             <Route path='no-convo' element={<NoConvoOpen />}/>
             <Route path='create-group' element={<CreateGroup />}/>

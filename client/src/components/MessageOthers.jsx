@@ -1,8 +1,11 @@
 import React from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { IconButton } from '@mui/material';
+import { useSelector } from 'react-redux';
 
-const MessageOthers = ({user, darkMode}) => {
+const MessageOthers = ({user}) => {
+  const {darkMode} = useSelector(state => state.theme)
+
   return (
     <div className={`flex items-center my-3 w-full`}>
         <div className={`flex flex-row items-center`}>
