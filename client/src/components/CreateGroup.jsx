@@ -1,22 +1,30 @@
 import React from 'react'
-import SendIcon from '@mui/icons-material/Send';
+import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useSelector } from 'react-redux';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useNavigate } from 'react-router-dom';
 
 const CreateGroup = () => {
+    const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
   return (
-    <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[0.7] bg-slate-100 px-4`}>
+    <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-1 md:flex-[0.7] bg-slate-100 px-4`}>
     <div className='flex flex-col gap-2 mt-2 h-full w-full'>
-        <div className={`${darkMode && 'dark-primary'} flex justify-between w-full bg-white mt-3 rounded-xl py-2 shadow-sm`}>
+        <div className={`${darkMode && 'dark-primary'} flex items-center w-full bg-white mt-3 rounded-xl py-2 shadow-sm`}>
+            <div className='md:hidden'>
+                <IconButton>
+                    <KeyboardBackspaceIcon className='text-slate-500' onClick={() => navigate('/nav')}/>
+                </IconButton>
+            </div>
             <input 
                 type="text" 
                 placeholder='Enter Group Name..'
                 className='flex-1 outline-none p-3 rounded-xl bg-transparent'
             />
             <IconButton>
-                <SendIcon />
+                <AddIcon className='text-slate-500' />
             </IconButton>
         </div>
         <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3`}>

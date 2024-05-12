@@ -8,6 +8,7 @@ import CreateGroup from './components/CreateGroup'
 import Users from './components/Users'
 import ChatArea from './components/ChatArea'
 import Groups from './components/Groups'
+import MobileNavBar from './pages/MobileNavBar'
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import {IconButton } from '@mui/material'
@@ -21,7 +22,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <div className={`${darkMode && 'dark-primary'} relative bg-slate-200 h-screen w-screen flex justify-center items-center`}>
-        <div className='fixed top-1 right-5'>
+        <div className='fixed top-1 right-5 hidden md:block'>
           <IconButton onClick={() => dispatch(toggleTheme())}>
             {
             darkMode ? 
@@ -34,9 +35,10 @@ const App = () => {
         <Routes>
         <Route path='/' element={<Login />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/nav' element={<MobileNavBar />}/>
           <Route path='app' element={<MainContainer />}>
-            <Route path='chat' element={<ChatArea />}/>
             <Route path='' element={<NoConvoOpen />}/>
+            <Route path='chat' element={<ChatArea />}/>
             <Route path='no-convo' element={<NoConvoOpen />}/>
             <Route path='create-group' element={<CreateGroup />}/>
             <Route path='users' element={<Users />}/>

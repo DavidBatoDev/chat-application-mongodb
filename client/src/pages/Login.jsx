@@ -21,7 +21,7 @@ const Login = () => {
         </div>
 
         <div className='flex-1 flex justify-center items-center p-3'>
-          <form className='md:shadow-2xl md:h-[70%] w-[90%] md:bg-white rounded-xl flex justify-center items-center'>
+          <form className={`md:shadow-2xl md:h-[70%] w-[90%] ${darkMode && 'md:bg-transparent md:shadow-none'} md:bg-white rounded-xl flex justify-center items-center`}>
             <div className='flex flex-col justify-center items-center w-full'>
               <h1 className={`${darkMode && 'text-blue-300'} text-2xl font-semibold text-blue-700 mb-4`}>
                 Start Chatting!

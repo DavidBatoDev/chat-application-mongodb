@@ -6,7 +6,7 @@ const Conversations = ({users}) => {
   const navigate = useNavigate()
 
   function handleClick() {
-    navigate('chat')
+    navigate('/app/chat')
   }
 
   return (
