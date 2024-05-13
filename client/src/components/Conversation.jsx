@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 const Conversation = ({user, onClick}) => {
   const {darkMode} = useSelector(state => state.theme)
   return (
-    <div className={`active:bg-slate-200 flex items-center px-5 py-3 gap-2 ${darkMode ? 'hover:bg-gray-900 active:bg-gray-900' : 'hover:bg-slate-300 active:bg-slate-300' }  cursor-pointer`} onClick={onClick}>
+    <div className={`flex items-center md:px-5 py-3 gap-2 ${darkMode ? 'hover:bg-gray-900 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-600' }  cursor-pointer`} onClick={onClick}>
         <AccountCircleIcon className='text-slate-500' />
         <div>
             <h1 className='text-md font-semibold'>{user.name}</h1>

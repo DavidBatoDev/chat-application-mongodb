@@ -45,10 +45,21 @@ const MobileNavBar = () => {
       setUsers(mockUsers)
     }, [])
 
+    useEffect(() => {
+      const handleResize = () => {
+        if (window.innerWidth > 768) {
+          navigate('/app');
+        }
+      };
+  
+      window.addEventListener('resize', handleResize);
+  
+      return () => window.removeEventListener('resize', handleResize);
+    }, [window.innerWidth, navigate]);
 
   return (
-    <div className='w-screen h-screen p-5 md:hidden flex flex-col'>
-       <div className={`flex ${darkMode && 'dark-secondary'} bg-white p-3 rounded-xl`}>
+    <div className={`${darkMode && 'dark-secondary'} w-screen h-screen p-5 md:hidden flex flex-col`}>
+       <div className={`flex ${darkMode && 'dark-primary'} bg-white p-3 rounded-xl`}>
         <nav className='w-full flex justify-between items-center'>
             <div className='flex items-center'>
                 <IconButton>
