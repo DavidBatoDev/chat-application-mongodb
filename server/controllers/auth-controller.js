@@ -1,22 +1,21 @@
 import User from '../models/user-model.js'
 import bcrypt from 'bcryptjs';
 
-export const login = (req, res) => {
+export const login = async (req, res) => {
     const {email, password} = req.body;
     try {
-        const user = User.findOne({email});
+        const user = await User.findOne({email});
         if (!user) {
-            res.status(400).json({error: 'User not found'});
-            return;
+            return res.status(400).json({error: 'User not found'});
         }
         const passwordIsValid = bcrypt.compareSync(password, user.password);
         if (!passwordIsValid) {
-            res.status(400).json({error: 'Invalid password'});
+            return res.status(400).json({error: 'Invalid password'});
         }
-        const {password, ...rest} = user._doc;
+        const {password: dummypass, ...rest} = user._doc;
         res.status(200).json(rest);
     } catch (error) {
-        res.status.send(error);
+        return res.status(400).json(error.message);
     }
 }
 
@@ -36,6 +35,6 @@ export const register = async (req, res) => {
         await user.save();
         res.status(201).json({message: 'User added'});
     } catch (error) {
-        res.status(400).json({error});
+        res.status(400).json({error: error.message});
     }
 }
