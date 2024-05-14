@@ -29,3 +29,15 @@ app.listen(PORT, () => {
 
 // routers
 app.use('/api/auth', authRoutes);
+
+app.use((error, req, res, next) => {
+    if (!error.statusCode) {
+        error.statusCode = 500;
+    }
+    if (!error.message) {
+        error.message = 'Internal server error';
+    }
+    res.status(error.statusCode).json({
+        error: error.message
+    });
+})
