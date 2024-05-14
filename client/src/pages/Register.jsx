@@ -1,21 +1,23 @@
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import { useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
 
-const Login = () => {
-  const [formBody, setFormBody] = useState({
-    email: '',
-    password: ''
-  })
 
-  const handleChange = (e) => {
-    setFormBody({
-      ...formBody,
-      [e.target.name]: e.target.value
+const Register = () => {
+    const {darkMode} = useSelector(state => state.theme)
+    const [formBody, setFormBody] = useState({
+        name: '',
+        email: '',
+        password: ''
     })
-  }
 
-  const {darkMode} = useSelector(state => state.theme)
+    const handleChange = (e) => {
+        setFormBody({
+            ...formBody,
+            [e.target.name]: e.target.value
+        })
+    }
+        
   return (
     <div className={`${darkMode && 'dark-primary'} h-full w-full flex justify-center items-center bg-slate-200`}>
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
@@ -40,6 +42,14 @@ const Login = () => {
                 Start Chatting!
               </h1>
               <input 
+                type='text'
+                name='name'
+                value={formBody.name}
+                onChange={handleChange}
+                placeholder='Name' 
+                className='placeholder:text-gray-600 w-[80%] h-12 md:bg-white border-b-2 text-black px-4 mb-4 rounded outline-none focus:ring-2 focus:ring-slate-400'
+              />
+              <input 
                 type='email'
                 name='email'
                 value={formBody.email}
@@ -58,16 +68,16 @@ const Login = () => {
               <button 
                 className='w-[80%] h-12 bg-blue-400 font-semibold text-black px-4 mb-4 rounded outline-none'
               >
-                Login
+                Register
               </button>
               <p className='flex gap-2'>
                 <span>
-                  Don't have an account?
+                    Have an account? 
                 </span>
-                <Link to="/register">
-                  <span className={`${darkMode && 'text-blue-300'} text-blue-700`}>
-                    Register
-                  </span>
+                <Link to={'/login'}>
+                    <span className={`${darkMode && 'text-blue-300'} text-blue-700`}>
+                        Login
+                    </span>
                 </Link>
               </p>
             </div>
@@ -78,4 +88,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Register
