@@ -30,6 +30,7 @@ app.listen(PORT, () => {
 // routers
 app.use('/api/auth', authRoutes);
 
+// error handler
 app.use((error, req, res, next) => {
     if (!error.statusCode) {
         error.statusCode = 500;

@@ -1,7 +1,8 @@
 import User from '../models/user-model.js'
 import expressAsyncHandler from 'express-async-handler';
-import { errorHandler } from '../utils/errorHandler.js';
 import bcrypt from 'bcryptjs';
+import { errorHandler } from '../utils/errorHandler.js';
+import { generateToken } from '../utils/generateToken.js';
 
 export const login = expressAsyncHandler( async (req, res, next) => {
     const {email, password} = req.body;
@@ -14,11 +15,14 @@ export const login = expressAsyncHandler( async (req, res, next) => {
         return next(errorHandler(400, 'Invalid password'));
     }
     const {password: dummypass, ...rest} = user._doc;
-    res.status(200).json(rest);
+    res.status(200).json({...rest, token: generateToken(user._id)});
 })
 
 export const register = expressAsyncHandler(async (req, res, next) => {
     const {name, email, password} = req.body;
+    if (!name || !email || !password) {
+        return next(errorHandler(400, 'All fields are required'));
+    }
     const userExist = await User.findOne({email});
     if (userExist) {
         return next(errorHandler(400, 'User already exist'));
