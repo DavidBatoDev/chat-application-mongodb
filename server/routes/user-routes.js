@@ -1,8 +1,10 @@
 import express from 'express';
 import {
-    fetchUsers
+    fetchAllUsers
 } from '../controllers/user-controller.js';
 
 const router = express.Router();
 
-router.get('/fetchUsers', fetchUsers);
+router.get('/fetchUsers', fetchAllUsers);
+
+export default router;

@@ -1,8 +1,18 @@
 import {useState, useEffect} from 'react'
 import { useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
+import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import {
+  loginStart,
+  loginSuccess,
+  loginFailure
+} from '../redux/userSlice/userSlice'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [formBody, setFormBody] = useState({
     email: '',
     password: ''
@@ -13,6 +23,30 @@ const Login = () => {
       ...formBody,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      console.log(formBody)
+      dispatch(loginStart())
+      const res = await axios.post('api/auth/login', formBody)
+      const data = res.data
+      if (!data.success ) {
+        dispatch(loginFailure(data))
+        return
+      }
+      console.log(data)
+      dispatch(loginSuccess(data))
+      if (window.innerWidth > 768) {
+        navigate('/app/chat')
+      } else {
+        navigate('/nav')
+      }
+
+    } catch (error) {
+      dispatch(loginFailure(error.message))
+    }
   }
 
   const {darkMode} = useSelector(state => state.theme)
@@ -34,7 +68,7 @@ const Login = () => {
         </div>
 
         <div className='flex-1 flex justify-center items-center p-3'>
-          <form className={`md:shadow-2xl md:h-[70%] w-[90%] ${darkMode && 'md:bg-transparent md:shadow-none'} rounded-xl flex justify-center items-center`}>
+          <form onSubmit={handleSubmit} className={`md:shadow-2xl md:h-[70%] w-[90%] ${darkMode && 'md:bg-transparent md:shadow-none'} rounded-xl flex justify-center items-center`}>
             <div className='flex flex-col justify-center items-center w-full'>
               <h1 className={`${darkMode && 'text-blue-300'} text-2xl font-semibold text-blue-700 mb-4`}>
                 Start Chatting!
@@ -55,7 +89,8 @@ const Login = () => {
                 placeholder='Password' 
                 className='placeholder:text-gray-600 w-[80%] h-12 md:bg-white border-b-2 text-black px-4 mb-4 rounded outline-none focus:ring-2 focus:ring-slate-400'
               />
-              <button 
+              <button
+                type='submit'
                 className='w-[80%] h-12 bg-blue-400 font-semibold text-black px-4 mb-4 rounded outline-none'
               >
                 Login

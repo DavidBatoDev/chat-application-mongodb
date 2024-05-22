@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import {useNavigate} from 'react-router-dom'
 
 const ChatArea = () => {
+  const {user} = useSelector(state => state.user)
   const navigate = useNavigate()
   const {darkMode} = useSelector(state => state.theme)
 

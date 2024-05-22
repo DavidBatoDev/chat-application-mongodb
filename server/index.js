@@ -3,6 +3,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth-routes.js'
+import userRoutes from './routes/user-routes.js'
 import cors from 'cors';
 
 // constants
@@ -29,6 +30,7 @@ app.listen(PORT, () => {
 
 // routers
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 
 // error handler
 app.use((error, req, res, next) => {
@@ -39,6 +41,7 @@ app.use((error, req, res, next) => {
         error.message = 'Internal server error';
     }
     res.status(error.statusCode).json({
+        success: false,
         error: error.message
     });
 })

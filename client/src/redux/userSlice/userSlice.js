@@ -27,7 +27,8 @@ export const userSlice = createSlice({
             state.loading = true
             state.error = null
         },
-        registerSuccess: (state) => {
+        registerSuccess: (state, action) => {
+            state.user = action.payload
             state.loading = false
             state.error = null
         },

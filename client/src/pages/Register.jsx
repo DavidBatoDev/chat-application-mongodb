@@ -1,9 +1,18 @@
 import {useState} from 'react'
 import { useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import {
+  registerStart,
+  registerSuccess,
+  registerFailure
+} from '../redux/userSlice/userSlice'
 
 const Register = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
     const [formBody, setFormBody] = useState({
         name: '',
@@ -21,13 +30,21 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
+            dispatch(registerStart())
             const res = await axios.post('api/auth/register', formBody)
-            const data = res.json()
-            if (data.success) {
-                alert(data.message)
+            const data = res.data
+            if (!data.success) {
+              dispatch(registerFailure(data.error))
+              return
+            }
+            dispatch(registerSuccess(data))
+            if (window.innerWidth > 768) {
+                navigate('/app/chat')
+            } else {
+                navigate('/nav')
             }
         } catch (error) {
-            alert(error.message)
+            dispatch(registerFailure(error.message))
         }
     }
         

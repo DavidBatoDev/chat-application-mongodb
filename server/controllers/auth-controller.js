@@ -15,7 +15,7 @@ export const login = expressAsyncHandler(async (req, res, next) => {
         return next(errorHandler(400, 'Invalid password'));
     }
     const {password: dummypass, ...rest} = user._doc;
-    res.status(200).json({...rest, token: generateToken(user._id)});
+    res.status(200).json({...rest, success: true,  token: generateToken(user._id)});
 })
 
 export const register = expressAsyncHandler(async (req, res, next) => {
@@ -34,5 +34,6 @@ export const register = expressAsyncHandler(async (req, res, next) => {
         password: hashedPassword,
     })
     await user.save();
-    res.status(201).json({message: 'User added'});
+    const {password: dummypass, ...rest} = user._doc;
+    res.status(200).json({...rest, success: true, token: generateToken(user._id)});
 })
