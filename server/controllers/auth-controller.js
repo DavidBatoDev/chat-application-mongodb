@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import { errorHandler } from '../utils/errorHandler.js';
 import { generateToken } from '../utils/generateToken.js';
 
-export const login = expressAsyncHandler( async (req, res, next) => {
+export const login = expressAsyncHandler(async (req, res, next) => {
     const {email, password} = req.body;
     const user = await User.findOne({email});
     if (!user) {

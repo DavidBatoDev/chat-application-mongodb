@@ -1,7 +1,7 @@
 import {useState} from 'react'
 import { useSelector } from 'react-redux'
 import {Link} from 'react-router-dom'
-
+import axios from 'axios'
 
 const Register = () => {
     const {darkMode} = useSelector(state => state.theme)
@@ -16,6 +16,19 @@ const Register = () => {
             ...formBody,
             [e.target.name]: e.target.value
         })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            const res = await axios.post('api/auth/register', formBody)
+            const data = res.json()
+            if (data.success) {
+                alert(data.message)
+            }
+        } catch (error) {
+            alert(error.message)
+        }
     }
         
   return (
@@ -36,7 +49,7 @@ const Register = () => {
         </div>
 
         <div className='flex-1 flex justify-center items-center p-3'>
-          <form className={`md:shadow-2xl md:h-[70%] w-[90%] ${darkMode && 'md:bg-transparent md:shadow-none'} rounded-xl flex justify-center items-center`}>
+          <form onSubmit={handleSubmit} className={`md:shadow-2xl md:h-[70%] w-[90%] ${darkMode && 'md:bg-transparent md:shadow-none'} rounded-xl flex justify-center items-center`}>
             <div className='flex flex-col justify-center items-center w-full'>
               <h1 className={`${darkMode && 'text-blue-300'} text-2xl font-semibold text-blue-700 mb-4`}>
                 Start Chatting!
@@ -66,6 +79,7 @@ const Register = () => {
                 className='placeholder:text-gray-600 w-[80%] h-12 md:bg-white border-b-2 text-black px-4 mb-4 rounded outline-none focus:ring-2 focus:ring-slate-400'
               />
               <button 
+              type='submit'
                 className='w-[80%] h-12 bg-blue-400 font-semibold text-black px-4 mb-4 rounded outline-none'
               >
                 Register
