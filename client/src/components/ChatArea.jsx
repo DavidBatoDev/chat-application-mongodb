@@ -18,9 +18,11 @@ const ChatArea = () => {
     <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[1] md:flex-[0.7] bg-slate-100 px-4`}>
       <div className={`${darkMode && 'dark-primary'} bg-white p-3 mt-5 rounded-xl flex justify-between shadow`}>
       <div className='flex items-center cursor-pointer'>
-        <IconButton onClick={() => navigate('/nav')}>
-          <KeyboardBackspaceIcon className='text-slate-500' />
-        </IconButton>
+        <div className='md:hidden'>
+          <IconButton onClick={() => navigate('/nav')}>
+            <KeyboardBackspaceIcon className='text-slate-500' />
+          </IconButton>
+        </div>
         <AccountCircleIcon className='text-slate-500 mr-2' />
         <div className='flex flex-col'>
           <h1 className='font-semibold'>John Doe</h1>

@@ -1,5 +1,5 @@
 import User from '../models/user-model.js'
-import Chat, {GroupChat} from '../models/chat-model.js'
+import Chat from '../models/chat-model.js'
 
 export const fetchUsers = async (req, res) => {
     try {
