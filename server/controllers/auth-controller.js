@@ -7,6 +7,9 @@ import { generateToken } from '../utils/generateToken.js';
 export const login = expressAsyncHandler(async (req, res, next) => {
     const {email, password} = req.body;
     const user = await User.findOne({email});
+    if (!email || !password) {
+        return next(errorHandler(400, 'All fields are required'));
+    }
     if (!user) {
         return next(errorHandler(400, 'User not found'));
     }

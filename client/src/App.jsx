@@ -15,6 +15,7 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import {IconButton } from '@mui/material'
 import { useSelector, useDispatch } from 'react-redux'
 import { toggleTheme } from './redux/themeSlice/themeSlice'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -34,19 +35,24 @@ const App = () => {
           </IconButton>        
         </div>
         <Routes>
-        <Route path='/' element={<Login />} />
+          <Route path='/' element={<Login />} />
           <Route path='/login' element={<Login />} />
+
           <Route path='/register' element={<Register />} />
-          <Route path='/nav' element={<MobileNavBar />}/>
-          <Route path='app' element={<MainContainer />}>
-            <Route path='' element={<NoConvoOpen />}/>
-            <Route path='chat' element={<ChatArea />}/>
-            <Route path='no-convo' element={<NoConvoOpen />}/>
-            <Route path='create-group' element={<CreateGroup />}/>
-            <Route path='users' element={<Users />}/>
-            <Route path='groups' element={<Groups />}/>
-            <Route path='*' element={<NoConvoOpen />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path='/nav' element={<MobileNavBar />}/>
+            <Route path='app' element={<MainContainer />}>
+              <Route path='' element={<NoConvoOpen />}/>
+              <Route path='chat' element={<ChatArea />}/>
+              <Route path='no-convo' element={<NoConvoOpen />}/>
+              <Route path='create-group' element={<CreateGroup />}/>
+              <Route path='users' element={<Users />}/>
+              <Route path='groups' element={<Groups />}/>
+              <Route path='*' element={<NoConvoOpen />} />
+            </Route>
           </Route>
+
         </Routes>
       </div>
     </BrowserRouter>
