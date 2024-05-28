@@ -7,13 +7,18 @@ import axios from 'axios'
 import {
   registerStart,
   registerSuccess,
-  registerFailure
+  registerFailure,
+  clearError
 } from '../redux/userSlice/userSlice'
+import { Backdrop } from '@mui/material'
+import { CircularProgress } from '@mui/material'
+import Alert from '@mui/material/Alert'
 
 const Register = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
+    const {error, loading} = useSelector(state => state.user)
     const [formBody, setFormBody] = useState({
         name: '',
         email: '',
@@ -37,6 +42,7 @@ const Register = () => {
               dispatch(registerFailure(data.error))
               return
             }
+            localStorage.setItem('userData', JSON.stringify(data))
             dispatch(registerSuccess(data))
             if (window.innerWidth > 768) {
                 navigate('/app/chat')
@@ -44,12 +50,25 @@ const Register = () => {
                 navigate('/nav')
             }
         } catch (error) {
-            dispatch(registerFailure(error.message))
+            console.log(error)
+            dispatch(registerFailure(error.response.data.error))
         }
     }
         
   return (
     <div className={`${darkMode && 'dark-primary'} h-full w-full flex justify-center items-center bg-slate-200`}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {error && (
+        <div className='fixed top-10 flex bg-red-50 pr-3'>
+          <Alert className='transition-opacity' severity="error">{error}</Alert>
+          <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+        </div>
+        )}
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
         <div className='flex-1 flex flex-col justify-center items-center rounded'>
           <img 

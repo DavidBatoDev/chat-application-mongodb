@@ -34,12 +34,8 @@ app.use('/api/user', userRoutes);
 
 // error handler
 app.use((error, req, res, next) => {
-    if (!error.statusCode) {
-        error.statusCode = 500;
-    }
-    if (!error.message) {
-        error.message = 'Internal server error';
-    }
+    error.statusCode = error.statusCode || 500;
+    error.message = error.message || 'Internal server error';
     res.status(error.statusCode).json({
         success: false,
         error: error.message

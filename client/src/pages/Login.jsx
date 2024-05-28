@@ -6,9 +6,13 @@ import { useDispatch } from 'react-redux'
 import {
   loginStart,
   loginSuccess,
-  loginFailure
+  loginFailure,
+  clearError
 } from '../redux/userSlice/userSlice'
 import { useNavigate } from 'react-router-dom'
+import { Backdrop } from '@mui/material'
+import { CircularProgress } from '@mui/material'
+import Alert from '@mui/material/Alert'
 
 const Login = () => {
   const dispatch = useDispatch()
@@ -17,6 +21,7 @@ const Login = () => {
     email: '',
     password: ''
   })
+  const {loading, error} = useSelector(state => state.user)
 
   const handleChange = (e) => {
     setFormBody({
@@ -28,7 +33,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      console.log(formBody)
       dispatch(loginStart())
       const res = await axios.post('api/auth/login', formBody)
       const data = res.data
@@ -37,21 +41,33 @@ const Login = () => {
         return
       }
       console.log(data)
+      localStorage.setItem('userData', JSON.stringify(data))
       dispatch(loginSuccess(data))
       if (window.innerWidth > 768) {
         navigate('/app/chat')
       } else {
         navigate('/nav')
       }
-
     } catch (error) {
-      dispatch(loginFailure(error.message))
+      dispatch(loginFailure(error.response.data.error))
     }
   }
 
   const {darkMode} = useSelector(state => state.theme)
   return (
     <div className={`${darkMode && 'dark-primary'} h-full w-full flex justify-center items-center bg-slate-200`}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading}
+        >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      {error && (
+        <div className='fixed top-10 flex bg-red-50 pr-3'>
+          <Alert className='transition-opacity' severity="error">{error}</Alert>
+          <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+        </div>
+        )}
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
         <div className='flex-1 flex flex-col justify-center items-center rounded'>
           <img 
@@ -100,7 +116,7 @@ const Login = () => {
                   Don't have an account?
                 </span>
                 <Link to="/register">
-                  <span className={`${darkMode && 'text-blue-300'} text-blue-700`}>
+                  <span disabled={loading} className={`${darkMode && 'text-blue-300'} text-blue-700`}>
                     Register
                   </span>
                 </Link>

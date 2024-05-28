@@ -68,7 +68,7 @@ const MobileNavBar = () => {
                 Name
             </div>
             <div className='flex items-center'>
-              <IconButton onClick={() => navigate('/app/groups')}>
+              <IconButton onClick={() => navigate('/app/users')}>
                     <PersonAddIcon 
                         className={`${darkMode && "text-slate-500"}`} />
                 </IconButton>
