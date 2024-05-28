@@ -42,7 +42,7 @@ const Register = () => {
               dispatch(registerFailure(data.error))
               return
             }
-            localStorage.setItem('userData', JSON.stringify(data))
+            localStorage.setItem('authToken', JSON.stringify(data.token))
             dispatch(registerSuccess(data))
             if (window.innerWidth > 768) {
                 navigate('/app/chat')
