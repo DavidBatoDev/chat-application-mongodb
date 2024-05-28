@@ -51,7 +51,7 @@ const Register = () => {
             }
         } catch (error) {
             console.log(error)
-            dispatch(registerFailure(error.response.data.error))
+            dispatch(registerFailure(error.response.data.errorMsg))
         }
     }
         

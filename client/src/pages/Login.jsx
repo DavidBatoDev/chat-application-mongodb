@@ -49,7 +49,7 @@ const Login = () => {
         navigate('/nav')
       }
     } catch (error) {
-      dispatch(loginFailure(error.response.data.error))
+      dispatch(loginFailure(error.response.data.errorMsg))
     }
   }
 

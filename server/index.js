@@ -38,6 +38,6 @@ app.use((error, req, res, next) => {
     error.message = error.message || 'Internal server error';
     res.status(error.statusCode).json({
         success: false,
-        error: error.message
+        errorMsg: error.message
     });
 })
