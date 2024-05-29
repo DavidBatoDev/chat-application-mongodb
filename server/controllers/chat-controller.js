@@ -1,6 +1,7 @@
 import Chat from '../models/chat-model.js'
 import User from '../models/user-model.js'
 import { errorHandler } from '../utils/errorHandler.js'
+import mongoose from 'mongoose'
 
 export const fetchChats = async (req, res, next) => {
     try {
@@ -8,7 +9,7 @@ export const fetchChats = async (req, res, next) => {
         if (!userId) {
             return next(errorHandler(400, 'Not Authorized'))
         }
-        Chat.find({users:{ $elemMatch: {userId}}})
+        Chat.find({users:{ $elemMatch: {_id: userId}}})
             .populate('users', '-password')
             .populate('groupAdmins', '-password')
             .populate('latestMessage')
@@ -28,7 +29,6 @@ export const fetchChats = async (req, res, next) => {
 export const fetchChat = async (req, res, next) => {
     const {userId} = req.params
     const currentUserId = req.user._id
-
     if (!userId) { // check if userId is provided
         return next(errorHandler(400, 'User ID is required'))
     }
@@ -36,36 +36,30 @@ export const fetchChat = async (req, res, next) => {
     if (!currentUserId) { // check if currentUser is defined
         return next(errorHandler(400, 'Not Authorized'))
     }
-
     const chats = await Chat.find({
         isGroupChat: false,
         $and: [
-            {users: { $elemMatch: {userId}}}, // find chat with user
-            {users: { $elemMatch: {$eq: currentUserId}}}, // find chat with current user
+            {users: { $elemMatch: {_id: userId}}}, // find chat with user
+            {users: { $elemMatch: {_id: currentUserId}}}, // find chat with current user
         ] 
     })
         .populate('users', "-password") // exclude password field
         .populate('latestMessage') // populate latestMessage field
-    
     if (!chats) {
         return res.status(404).json({message: 'Chats not found'})
     }
-
     chats = await User.populate(chats, { // populate sender field
         path: "latestMessage.sender",
         select: "name email"  
     })
-
     if (chats.length > 0) { // if chat is found
         return res.status(200).json(chats[0])
     }
-
     const newChat = new Chat({ // create new chat
         chatName: "sender",
         users: [currentUserId, userId],
         isGroupChat: false
     })
-
     newChat.save() // create a new chat
         .then(async (chat) => {
             chat = await User.populate(chat, {
@@ -79,16 +73,16 @@ export const fetchChat = async (req, res, next) => {
         })
 }
 
-export const fetchGroups = async (req, res, next) => {
+export const fetchUserGroups = async (req, res, next) => {
     try {
-        const currentUser = req.user._id
-        if (!currentUser) {
-            next(errorHandler(400, "Not authorized!"))
+        const currentUserId = req.user._id
+        if (!currentUserId) {
+            return next(errorHandler(400, "Not authorized!"))
         }
         const groupChats = await Chat.find({
             isGroupChat: true, 
             $and: [
-                {users: {$elemMatch: {$eq: currentUser._id}}}
+                {users: {$elemMatch: {$eq: currentUserId}}}
             ]
         })
             .populate('users', "-password")
@@ -108,11 +102,11 @@ export const fetchGroups = async (req, res, next) => {
     }
 }
 
-export const createGroup = async (req, res) => {
+export const createGroup = async (req, res, next) => {
     const {usersToBeAdded, groupName} = req.body
 
     if (!usersToBeAdded || !groupName) {
-        next(errorHandler(400, "Data is no suffiecient"))
+        return next(errorHandler(400, "Data is no suffiecient"))
     }
 
     const users = JSON.parse(usersToBeAdded)
@@ -139,12 +133,12 @@ export const createGroup = async (req, res) => {
     }    
 }
 
-export const leftGroup = async (req, res) => {
+export const leftGroup = async (req, res, next) => {
     const {groupId} = req.params
-    const {userId} = req.body
+    const {userId} = req.body.id
 
     if (!groupId) {
-        next(errorHandler(400, "Group ID is required"))
+        return next(errorHandler(400, "Group ID is required"))
     }
 
     try {
@@ -154,15 +148,66 @@ export const leftGroup = async (req, res) => {
             return res.status(404).json({message: 'Group Chat not found'})
         }
 
-        const groupUsers = groupChat.users
-
-        if (groupUsers.includes(userId)) {
-            groupUsers.splice(groupUsers.indexOf(userId), 1)
-        }
+        const groupUsers = groupChat.users.filter(id => userId.toString() !== id.toString())
 
         groupChat.users = groupUsers
         await groupChat.save()
 
+        res.status(200).json(groupChat)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const addGroupMember = async (req, res, next) => {
+    const currentUserId = req.user._id
+    const {userId, groupId} = req.body
+    try {
+        if (!currentUserId) {
+            return next(errorHandler("400", "Not Authorized!"))
+        }
+        if (!userId || !groupId) {
+            return next(errorHandler(400, "Data is not sufficient!"))
+        }
+        const groupChat = await Chat.findOne({_id: groupId})
+        if (!groupChat) {
+            return next(errorHandler(404, "Group chat not found!"))
+        }
+        const groupMembers = groupChat.users
+        const groupAdmins = groupChat.groupAdmin
+
+        if (groupAdmins.map(admin => admin.toString()).includes(currentUserId.toString())) {
+            groupMembers.push(mongoose.Types.ObjectId(userId))
+            groupChat.users = groupMembers
+            await groupChat.save()
+        } else {
+            return res.status(401).json({message: "You're not a groupAdmin"})
+        }
+        res.status(200).json(groupChat)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const joinGroup = async (req, res, next) => {
+    const currentUserId = req.user._id
+    const groupId = req.params.groupId
+    try {
+        if (!currentUserId) {
+            return next(errorHandler(400, "Not Authorized!"))
+        }
+        const groupChat = await Chat.findOne({_id: groupId})
+        if (!groupChat) {
+            return next(errorHandler(404, "Group chat not found!"))
+        }
+        const groupMembers = groupChat.users
+        if (!groupMembers.map(user => user.toString()).includes(currentUserId.toString())) {
+            groupMembers.push(mongoose.Types.ObjectId(currentUserId))
+            groupChat.users = groupMembers;
+            await groupChat.save();
+        } else {
+            return next(errorHandler(400, "Member already exists!"))
+        }
         res.status(200).json(groupChat)
     } catch (error) {
         next(error)
