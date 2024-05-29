@@ -173,17 +173,18 @@ export const addGroupMember = async (req, res, next) => {
         if (!groupChat) {
             return next(errorHandler(404, "Group chat not found!"))
         }
-        const groupMembers = groupChat.users
         const groupAdmins = groupChat.groupAdmin
 
         if (groupAdmins.map(admin => admin.toString()).includes(currentUserId.toString())) {
-            groupMembers.push(mongoose.Types.ObjectId(userId))
-            groupChat.users = groupMembers
-            await groupChat.save()
+            const added = await Chat.findByIdAndUpdate(
+                groupId,
+                {$push: {users: mongoose.Types.ObjectId(userId)}},
+                {new: true}
+            )
+            res.status(200).json(added)
         } else {
             return res.status(401).json({message: "You're not a groupAdmin"})
         }
-        res.status(200).json(groupChat)
     } catch (error) {
         next(error)
     }
@@ -196,19 +197,16 @@ export const joinGroup = async (req, res, next) => {
         if (!currentUserId) {
             return next(errorHandler(400, "Not Authorized!"))
         }
-        const groupChat = await Chat.findOne({_id: groupId})
+        const groupChat = await Chat.findById(groupId)
         if (!groupChat) {
             return next(errorHandler(404, "Group chat not found!"))
         }
-        const groupMembers = groupChat.users
-        if (!groupMembers.map(user => user.toString()).includes(currentUserId.toString())) {
-            groupMembers.push(mongoose.Types.ObjectId(currentUserId))
-            groupChat.users = groupMembers;
-            await groupChat.save();
-        } else {
-            return next(errorHandler(400, "Member already exists!"))
-        }
-        res.status(200).json(groupChat)
+        const added = await Chat.findByIdAndUpdate(groupId, {
+            $push: {users: mongoose.Types.ObjectId(currentUserId)}
+        }, {new: true})
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password")
+        res.status(200).json(added)
     } catch (error) {
         next(error)
     }
