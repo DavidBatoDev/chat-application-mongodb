@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth-routes.js'
 import userRoutes from './routes/user-routes.js'
+import chatRoutes from './routes/chat-routes.js'
 import cors from 'cors';
 
 // constants
@@ -31,6 +32,7 @@ app.listen(PORT, () => {
 // routers
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 // error handler
 app.use((error, req, res, next) => {

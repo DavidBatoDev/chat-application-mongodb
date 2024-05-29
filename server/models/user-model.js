@@ -13,20 +13,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    isAdmin: {
-        type: Boolean,
-        default: false,
-    },
     profilePic: {
         type: String,
         default: "",
     },
-    chatList: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Chat",
-        },
-    ],
     chatRequests: [
         {
             type: mongoose.Schema.Types.ObjectId,
