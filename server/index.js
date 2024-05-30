@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/auth-routes.js'
 import userRoutes from './routes/user-routes.js'
 import chatRoutes from './routes/chat-routes.js'
+import messageRoutes from './routes/message-routes.js'
 import cors from 'cors';
 
 // constants
@@ -33,6 +34,7 @@ app.listen(PORT, () => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/message', messageRoutes);
 
 // error handler
 app.use((error, req, res, next) => {
