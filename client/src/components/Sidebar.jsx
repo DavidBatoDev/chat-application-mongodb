@@ -8,37 +8,29 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { useSelector } from 'react-redux';
+import axios from 'axios'
 
 const Sidebar = () => {
   const {darkMode} = useSelector(state => state.theme)
 
   const navigate = useNavigate()
-  const [users, setUsers] = useState([])
-  const mockUsers = [
-    {
-      name: 'John Doe',
-      lastMessage: 'Hello, how are you?',
-      timeStamp: 'today'
-    },
-    {
-      name: 'Jane Doe',
-      lastMessage: 'Hello, how are you?',
-      timeStamp: 'yesterday'
-    },
-    {
-      name: 'John Smith',
-      lastMessage: 'Hello, how are you?',
-      timeStamp: '2 days ago'
-    },
-    {
-      name: 'Jane Smith',
-      lastMessage: 'Hello, how are you?',
-      timeStamp: '3 days ago'
-    }
-  ]
+  const [convos, setConvos] = useState([])
 
   useEffect(() => {
-    setUsers(mockUsers)
+    const fetchUsersChat = async () => {
+      try {
+        const token = JSON.parse(localStorage.getItem('authToken'))
+        const res = await axios.get('/api/chat', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        setConvos(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchUsersChat()
   }, [])
 
   return (
@@ -69,8 +61,7 @@ const Sidebar = () => {
           <input type="text" placeholder='Search' className='w-full bg-transparent border-b-2 border-slate-500 focus:outline-none' />
         </div>
       </div>
-      {/* friend-list */}
-      <Conversations users={users} />
+      <Conversations convos={convos} />
     </div>
   )
 }

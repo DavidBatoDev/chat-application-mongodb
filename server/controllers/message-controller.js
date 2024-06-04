@@ -14,20 +14,29 @@ export const sendMessage = async (req, res, next) => {
             return next(errorHandler(400, "Data is not sufficient"))
         }
         const chat = await Chat.findById(chatId)
+        if (!chat) {
+            return next(errorHandler(404, "Chat not found"))
+        }
         const recipients = chat.users.filter(id => currentUserId.toString() != id.toString())
         const newMessage = new Message({
             chat: chatId,
             sender: currentUserId,
-            reciever: recipients
+            reciever: recipients,
+            content: content
         })
         let message = await newMessage.save()
-        message = await message
+        message = await Message.findById(message._id)
             .populate("sender", "name")
-            .populate('receiver')
-            .populate('chat')
+            .populate({
+                path: 'chat',
+                populate: {
+                    path: 'users',
+                    select: 'name email'
+                }
+            });
         message = await User.populate(message, {
-            path: "chat.users",
-            select: "name email"
+            path: 'reciever',
+            select: 'name email'
         })
         await Chat.findByIdAndUpdate(chatId, {latestMessage: message})
         res.status(200).json(message)
@@ -39,10 +48,18 @@ export const sendMessage = async (req, res, next) => {
 export const fetchMessages = async (req, res, next) => {
     const {chatId} = req.params
     try {
+        if (!chatId) {
+            return next(errorHandler(400, "Chat ID is required"))
+        }
+
+        let chat = await Chat.findById(chatId)
+
+        if (!chat) {
+            return next(errorHandler(404, "Chat not found"))
+        }
+
         let messages = await Message.find({chat: chatId})
-            .populate("chat")
             .populate("sender", "name")
-            .populate('receiver')
 
         messages = await Chat.populate(messages, {
             path: "chat",
@@ -52,7 +69,17 @@ export const fetchMessages = async (req, res, next) => {
             }
         })
 
-        res.status(200).json(messages)
+        messages = await User.populate(messages, {
+            path: "reciever",
+            select: "name email"
+        })
+
+        chat = await Chat.populate(chat, {
+            path: "users",
+            select: "name email"
+        })
+
+        res.status(200).json({messages, chat})
     } catch (error) {
         next(error)
     }

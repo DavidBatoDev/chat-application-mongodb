@@ -9,18 +9,18 @@ export const fetchChats = async (req, res, next) => {
         if (!userId) {
             return next(errorHandler(400, 'Not Authorized'))
         }
-        Chat.find({users:{ $elemMatch: {_id: userId}}})
+        let chat = await Chat.find({users: { $elemMatch: { $eq: userId }}})
             .populate('users', '-password')
-            .populate('groupAdmins', '-password')
             .populate('latestMessage')
             .sort({updatedAt: -1})
-            .then(async (chats) => {
-                chats = await User.populate(chats, {
-                    path: 'latestMessage.sender',
-                    select: 'name email'
-                })
-                res.status(200).json(chats)
-            })
+        if (!chat) {
+            return res.status(404).json({message: 'Chats not found'})
+        }
+        chat = await User.populate(chat, {
+            path: 'latestMessage.sender',
+            select: 'name email'
+        })
+        res.status(200).json(chat)
     } catch (error) {
         next(error)
     }
@@ -29,19 +29,16 @@ export const fetchChats = async (req, res, next) => {
 export const fetchChat = async (req, res, next) => {
     const {userId} = req.params
     const currentUserId = req.user._id
+
     if (!userId) { // check if userId is provided
         return next(errorHandler(400, 'User ID is required'))
     }
-
     if (!currentUserId) { // check if currentUser is defined
         return next(errorHandler(400, 'Not Authorized'))
     }
-    const chats = await Chat.find({
+    let chats = await Chat.find({
         isGroupChat: false,
-        $and: [
-            {users: { $elemMatch: {_id: userId}}}, // find chat with user
-            {users: { $elemMatch: {_id: currentUserId}}}, // find chat with current user
-        ] 
+        users: { $all: [userId, currentUserId] }
     })
         .populate('users', "-password") // exclude password field
         .populate('latestMessage') // populate latestMessage field

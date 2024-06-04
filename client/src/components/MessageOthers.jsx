@@ -3,7 +3,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { IconButton } from '@mui/material';
 import { useSelector } from 'react-redux';
 
-const MessageOthers = ({user}) => {
+const MessageOthers = ({message}) => {
   const {darkMode} = useSelector(state => state.theme)
 
   return (
@@ -12,12 +12,12 @@ const MessageOthers = ({user}) => {
         <IconButton>
             <AccountCircleIcon className='text-slate-500' />
         </IconButton>
-        <div className={`${darkMode && 'dark-secondary'} flex flex-col bg-slate-300 p-2 rounded-xl min-w-14 max-w-56 md:max-w-72 lg:max-w-96`}>
+        <div className={`${darkMode && 'dark-secondary'} flex flex-col bg-slate-300 p-2 rounded-xl  min-w-56 max-w-40 md:max-w-72 lg:max-w-96`}>
             <h1 className='font-semibold'>
-              John Doe
+              {message.sender.name}
             </h1>
             <p className={`text-sm text-wrap break-words`}>
-              This is a sample message from others
+              {message.content}
             </p>
             <span className='flex justify-end text-xs text-gray-400'>
               today

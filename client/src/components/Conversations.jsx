@@ -1,18 +1,11 @@
 import React from 'react'
 import Conversation from './Conversation';
-import { useNavigate } from 'react-router-dom';
 
-const Conversations = ({users}) => {
-  const navigate = useNavigate()
-
-  function handleClick() {
-    navigate('/app/chat')
-  }
-
+const Conversations = ({convos}) => {
   return (
     <div className='flex flex-col'>
-        {users.map((user, index) => (
-            <Conversation key={index} user={user} onClick={handleClick} />
+        {convos.map((convo, index) => (
+            <Conversation key={index} convo={convo} />
         ))}
     </div>
   )

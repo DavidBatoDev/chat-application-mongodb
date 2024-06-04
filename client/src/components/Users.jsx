@@ -8,17 +8,17 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Users = () => {
+    const {user} = useSelector(state => state.user)
     const [users, setUsers] = useState([])
     const [search, setSearch] = useState('')
     const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
 
+    // fetching public users
     useEffect(() => {
-        console.log('fetching users')
         const fetchUsers = async () => {
             try {
-                const userData = JSON.parse(localStorage.getItem('userData'))
-                const token = userData?.token
+                const token = JSON.parse(localStorage.getItem('authToken'))
                 const res = await axios.get(`/api/user/fetchUsers?search=${search}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
@@ -32,6 +32,21 @@ const Users = () => {
         }
         fetchUsers()
     }, [search])
+
+    const handleFetchChat = async (userId) => {
+        try {
+            const token = JSON.parse(localStorage.getItem('authToken'))
+            const res = await axios.get(`/api/chat/fetchChat/${userId}`,{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+           const chatId = await res.data._id
+            navigate(`/app/chat/${res.data._id}`)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return (
         <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-1 md:flex-[0.7] bg-slate-100 px-4`}>
@@ -62,7 +77,7 @@ const Users = () => {
             <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3 pt-0`}>
                 <div className='flex flex-col overflow-auto mt-1 mb-3'>
                     {users.length > 0 && users.map(user => (
-                        <div key={user._id} className='flex items-center py-3 border-b-2'>
+                        <div onClick={() => handleFetchChat(user._id)} key={user._id} className='hover:opacity-50 cursor-pointer flex items-center py-3 border-b-2'>
                             <div className='flex items-center gap-2'>
                                 <AccountCircleIcon className='text-slate-400'/>
                                 {user.name}

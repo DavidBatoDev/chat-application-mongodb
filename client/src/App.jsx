@@ -31,7 +31,7 @@ const App = () => {
             <Route path='/nav' element={<MobileNavBar />}/>
             <Route path='app/*' element={<MainContainer />}>
               <Route path='' element={<NoConvoOpen />}/>
-              <Route path='chat' element={<ChatArea />}/>
+              <Route path='chat/:chatId' element={<ChatArea />}/>
               <Route path='no-convo' element={<NoConvoOpen />}/>
               <Route path='create-group' element={<CreateGroup />}/>
               <Route path='users' element={<Users />}/>
