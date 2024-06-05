@@ -16,7 +16,7 @@ router.get('/', authorizationHandler, fetchChats);  // fetch all the chats of a 
 
 router.get('/fetchGroups', authorizationHandler, fetchUserGroups); // fetch all the groups of a user
 
-router.get('/fetchChat/:userId', authorizationHandler, fetchChat); // fetch chat with a user (between current user and the user with userId)
+router.get('/fetchChat/:userId', authorizationHandler, fetchChat); // fetch chat or create chat with a user (between current user and the user with userId)
 
 router.post('/createGroup', authorizationHandler, createGroup); // create a group
 

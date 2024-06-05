@@ -1,5 +1,6 @@
 import User from '../models/user-model.js'
 import Chat from '../models/chat-model.js'
+import { errorHandler } from '../utils/errorHandler.js';
 
 export const fetchUsers = async (req, res) => {
     try {
@@ -29,9 +30,34 @@ export const fetchGroups = async (req, res) => {
             const groups = await Chat.find({isGroupChat: true, chatName: { $regex: search, $options: 'i' }});
             return res.status(200).json(groups);
         }
-        const groups = await GroupChat.find({users: req.user._id}).populate('users');
+        const groups = await Chat.find({isGroupChat:true, users: req.user._id}).populate('users');
         res.status(200).json(groups);
     } catch (error) {
         res.status(500).json({message: error.message});
+    }
+}
+
+export const fetchRelatedUsers = async (req, res, next) => {
+    const currentUserId = req.user._id;
+    try {
+        if (!currentUserId) {
+            return next(errorHandler(401, 'Unauthorized'));
+        }
+        const chats = await Chat.find({users: currentUserId})
+            .populate('users');
+        if (chats.length === 0) {
+            return res.status(200).json([]);
+        }
+        const relatedUsers = [];
+        chats.forEach(chat => {
+            chat.users.forEach(user => {
+                if (user._id.toString() !== currentUserId.toString() && !relatedUsers.includes(user)) {
+                    relatedUsers.push(user);
+                }
+            });
+        });
+        res.status(200).json(relatedUsers);
+    } catch (error) {
+        next(error);
     }
 }

@@ -15,7 +15,7 @@ const Conversation = ({convo}) => {
     : convo.chatName
 
   return (
-    <div onClick={() => navigate(`/app/chat/${convo._id}`)} className={`flex items-center md:px-5 py-3 gap-2 ${darkMode ? 'hover:bg-gray-900 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-600' }  cursor-pointer`}>
+    <div onClick={() => navigate(`/app/chat/${convo._id}`)} className={`flex items-center md:px-5 py-3 gap-2 ${darkMode ? 'hover:bg-gray-900 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-100'} cursor-pointer`}>
         <AccountCircleIcon className='text-slate-500' />
         <div>
             <h1 className='text-md font-semibold'>{chatName}</h1>

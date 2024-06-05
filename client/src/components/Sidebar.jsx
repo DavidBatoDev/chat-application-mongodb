@@ -8,11 +8,13 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { useSelector } from 'react-redux';
+import {logout} from '../redux/userSlice/userSlice'
+import { useDispatch } from 'react-redux';
 import axios from 'axios'
 
 const Sidebar = () => {
+  const dispatch = useDispatch()
   const {darkMode} = useSelector(state => state.theme)
-
   const navigate = useNavigate()
   const [convos, setConvos] = useState([])
 
@@ -27,17 +29,24 @@ const Sidebar = () => {
         })
         setConvos(res.data)
       } catch (error) {
-        console.log(error)
+        console.log(error.response.data)
       }
     }
     fetchUsersChat()
   }, [])
 
+  const handleLogout = () => {
+    dispatch(logout())
+    localStorage.removeItem('authToken')
+    localStorage.removeItem('userData')
+    navigate('/login')
+  }
+
   return (
     <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
       {/* nav */}
       <nav className={`${darkMode && 'dark-primary'} flex justify-between my-5 mx-3 rounded-xl p-3 bg-white`}>
-        <div>
+        <div onClick={handleLogout}>
           <IconButton>
             <AccountCircleIcon className='text-slate-500' />
           </IconButton>

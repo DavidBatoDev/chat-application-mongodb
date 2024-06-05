@@ -12,38 +12,38 @@ import { useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/themeSlice/themeSlice';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import axios from 'axios'
 
 const MobileNavBar = () => {
+    const [convos, setConvos] = useState([])
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
     const [users, setUsers] = useState([])
-    const mockUsers = [
-      {
-        name: 'John Doe',
-        lastMessage: 'Hello, how are you?',
-        timeStamp: 'today'
-      },
-      {
-        name: 'Jane Doe',
-        lastMessage: 'Hello, how are you?',
-        timeStamp: 'yesterday'
-      },
-      {
-        name: 'John Smith',
-        lastMessage: 'Hello, how are you?',
-        timeStamp: '2 days ago'
-      },
-      {
-        name: 'Jane Smith',
-        lastMessage: 'Hello, how are you?',
-        timeStamp: '3 days ago'
-      }
-    ]
-  
     useEffect(() => {
-      setUsers(mockUsers)
+      const fetchUsersChat = async () => {
+        try {
+          const token = JSON.parse(localStorage.getItem('authToken'))
+          const res = await axios.get('/api/chat', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          })
+          setConvos(res.data)
+        } catch (error) {
+          console.log(error.response.data)
+        }
+      }
+      fetchUsersChat()
     }, [])
+  
+    const handleLogout = () => {
+      dispatch(logout())
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('userData')
+      navigate('/login')
+    }
+  
 
     useEffect(() => {
       const handleResize = () => {
@@ -106,7 +106,7 @@ const MobileNavBar = () => {
                 display: 'none' 
               }
             }}>
-        <Conversations users={users} />
+        <Conversations convos={convos} />
        </div>
     </div>
   )

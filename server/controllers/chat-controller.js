@@ -103,15 +103,15 @@ export const createGroup = async (req, res, next) => {
     const {usersToBeAdded, groupName} = req.body
 
     if (!usersToBeAdded || !groupName) {
-        return next(errorHandler(400, "Data is no suffiecient"))
+        return next(errorHandler(400, "Data is no sufficient"))
     }
 
-    const users = JSON.parse(usersToBeAdded)
-    users.push(req.user._id)
+    const users = [...usersToBeAdded, req.user._id]
+
 
     try {
         const groupChat = new Chat({
-            name: groupName,
+            chatName: groupName,
             users: users,
             isGroupChat: true,
             groupAdmin: req.user._id
