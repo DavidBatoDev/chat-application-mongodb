@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import SendIcon from '@mui/icons-material/Send';
@@ -11,8 +11,12 @@ import {useNavigate} from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { CircularProgress } from '@mui/material';
+import io from 'socket.io-client'
 
 const ChatArea = () => {
+  const latestMessage = useRef(null)
+  const [isOnline, setIsOnline] = useState(false)
+  const [socketConnectionStatus, setSocketConnectionStatus] = useState(false)
   const [loading, setLoading] = useState(true)
   const [chatName, setChatName] = useState('')
   const [text, setText] = useState('')
@@ -22,6 +26,32 @@ const ChatArea = () => {
   const {darkMode} = useSelector(state => state.theme)
   const {chatId} = useParams()
 
+  const socket = io('http://localhost:5000')
+  
+  // scroll to latest message
+  useEffect(() => {
+    latestMessage.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // socket connection (setup)
+  useEffect(() => {
+    socket.emit('setup', {data: user})
+    socket.on('connection', () => {
+      setSocketConnectionStatus(!socketConnectionStatus)
+    })
+  }, [])
+
+  // socket message received
+  useEffect(() => {
+    socket.on('message received', (message) => {
+      setMessages(prevState => [...prevState, message])
+    })
+    return () => {
+      socket.off('message received')
+    }
+  }, [])
+
+  // fetch messages and socket join chat
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -41,13 +71,14 @@ const ChatArea = () => {
           setChatName(friendName.name)
         }
         setLoading(false)
+        socket.emit('join chat', chatId)
       } catch (error) {
         console.log(error.response.data)
     }}
     fetchMessages()
-  }, [chatId])
-
+  }, [chatId, user._id])
   
+  // socket new message
   const handleSendMessage = async () => {
     try {
       const token = JSON.parse(localStorage.getItem('authToken'))
@@ -59,8 +90,9 @@ const ChatArea = () => {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(res.data)
       setText('')
+      setMessages([...messages, res.data])
+      socket.emit('new message', res.data)
     } catch (error) {
       console.log(error)
     }
@@ -108,6 +140,7 @@ const ChatArea = () => {
                   {messages.map(message => {
                     return message.sender._id === user._id ? <MessageSelf key={message._id} message={message} /> : <MessageOthers key={message._id} message={message} />
                   })}
+                  <div ref={latestMessage} />
               </div>
             </div>
             )

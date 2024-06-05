@@ -1,5 +1,7 @@
 // imports
 import express from 'express';
+import {createServer} from 'http';
+import {Server} from 'socket.io';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth-routes.js'
@@ -11,11 +13,14 @@ import cors from 'cors';
 // constants
 dotenv.config()
 const app = express();
+const httpServer = createServer(app);
 const PORT = process.env.PORT || 5002;
 const DB_URI = process.env.MONGODB_URI;
 
 //middlewares
-app.use(cors());
+app.use(cors({
+    origin: '*'
+}));
 app.use(express.json());
 
 mongoose.connect(DB_URI).then(() => {
@@ -23,12 +28,6 @@ mongoose.connect(DB_URI).then(() => {
 }).catch((error) => {
     console.log('Error connecting to database', error);
 });
-
-
-// listen
-app.listen(PORT, () => {
-    console.log('Server is running on port ', PORT);
-})
 
 // routers
 app.use('/api/auth', authRoutes);
@@ -44,4 +43,38 @@ app.use((error, req, res, next) => {
         success: false,
         errorMsg: error.message
     });
+})
+
+// listen
+const server = app.listen(PORT, () => {
+    console.log('Server is running on port ', PORT);
+})
+
+// socket.io
+const io = new Server(server, {
+    cors: {
+        origin: '*'
+    },
+    pingTimeout: 60000,
+});
+
+io.on('connection', (socket) => {
+    socket.on('setup', (user) => {
+        socket.join(user.data._id)
+        socket.emit('connected')
+    })
+
+    socket.on('join chat', (chatId) => {
+        socket.join(chatId)
+    })
+
+    socket.on('new message', (messageStatus) => {
+        let chat = messageStatus.chat
+        if (!chat.users) return console.log('users not found')
+        chat.users.forEach(user => {
+            if (user._id !== messageStatus.sender._id) {
+                socket.in(user._id).emit('message received', messageStatus)
+            }
+        })
+    })
 })
