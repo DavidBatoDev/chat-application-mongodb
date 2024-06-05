@@ -77,7 +77,7 @@ const Users = () => {
             <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3 pt-0`}>
                 <div className='flex flex-col overflow-auto mt-1 mb-3'>
                     {users.length > 0 && users.map(user => (
-                        <div onClick={() => handleFetchChat(user._id)} key={user._id} className='hover:opacity-50 cursor-pointer flex items-center py-3 border-b-2'>
+                        <div onClick={() => handleFetchChat(user._id)} key={user._id} className={`cursor-pointer flex items-center py-3 border-b-2 ${darkMode ? "hover:bg-slate-700" : "hover:bg-slate-200"} rounded-xl px-3`}>
                             <div className='flex items-center gap-2'>
                                 <AccountCircleIcon className='text-slate-400'/>
                                 {user.name}

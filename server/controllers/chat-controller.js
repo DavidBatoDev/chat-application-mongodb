@@ -198,8 +198,12 @@ export const joinGroup = async (req, res, next) => {
         if (!groupChat) {
             return next(errorHandler(404, "Group chat not found!"))
         }
+
+        if (groupChat.users.map(user => user.toString()).includes(currentUserId.toString())) {
+            return res.status(400).json({message: "You're already a member of this group"})
+        }
         const added = await Chat.findByIdAndUpdate(groupId, {
-            $push: {users: mongoose.Types.ObjectId(currentUserId)}
+            $push: {users: currentUserId}
         }, {new: true})
         .populate("users", "-password")
         .populate("groupAdmin", "-password")
