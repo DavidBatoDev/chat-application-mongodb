@@ -68,13 +68,19 @@ io.on('connection', (socket) => {
         socket.join(chatId)
     })
 
-    socket.on('new message', (messageStatus) => {
+    socket.on('new message', async (messageStatus) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
-        chat.users.forEach(user => {
-            if (user._id !== messageStatus.sender._id) {
-                socket.in(user._id).emit('message received', messageStatus)
-            }
-        })
+        try {
+            await chat.users.forEach(user => {
+                if (user._id !== messageStatus.sender._id) {
+                    socket.in(user._id).emit('message received', messageStatus)
+                }
+            console.log('message sent')
+            })
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
     })
 })

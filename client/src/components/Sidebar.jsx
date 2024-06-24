@@ -46,7 +46,7 @@ const Sidebar = () => {
     <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
       {/* nav */}
       <nav className={`${darkMode && 'dark-primary'} flex justify-between my-5 mx-3 rounded-xl p-3 bg-white`}>
-        <div onClick={handleLogout}>
+        <div onClick={() => navigate('/app/user')}>
           <IconButton>
             <AccountCircleIcon className='text-slate-500' />
           </IconButton>

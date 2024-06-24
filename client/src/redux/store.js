@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit';
 import themeReducer from './themeSlice/themeSlice';
 import userReducer from './userSlice/userSlice';
+import errorReducer from './errorSlice/errorSlice';
 import {persistStore, persistReducer} from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -11,11 +12,13 @@ const persistConfig = {
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer)
 const persistedThemeReducer = persistReducer(persistConfig, themeReducer)
+const persistedErrorReducer = persistReducer(persistConfig, errorReducer)
 
 export const store = configureStore({
     reducer: {
         user: persistedUserReducer,
-        theme: persistedThemeReducer
+        theme: persistedThemeReducer,
+        error: persistedErrorReducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false

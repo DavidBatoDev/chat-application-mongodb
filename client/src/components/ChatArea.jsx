@@ -12,19 +12,24 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { CircularProgress } from '@mui/material';
 import io from 'socket.io-client'
+import Alert from '@mui/material/Alert'
+import { clearError, setError } from '../redux/errorSlice/errorSlice'
+import { useDispatch } from 'react-redux'
 
 const ChatArea = () => {
+  const dispatch = useDispatch()
   const latestMessage = useRef(null)
-  const [isOnline, setIsOnline] = useState(false)
   const [socketConnectionStatus, setSocketConnectionStatus] = useState(false)
   const [loading, setLoading] = useState(true)
   const [chatName, setChatName] = useState('')
   const [text, setText] = useState('')
   const [messages, setMessages] = useState([])
   const navigate = useNavigate()
-  const {user} = useSelector(state => state.user) // current user
+  const {user} = useSelector(state => state.user)
   const {darkMode} = useSelector(state => state.theme)
+  const {errorMsg} = useSelector(state => state.error)
   const {chatId} = useParams()
+  const [test, setTest] = useState(true)
 
   const socket = io('http://localhost:5000')
   
@@ -91,6 +96,10 @@ const ChatArea = () => {
         }
       })
       setText('')
+      if (res.data?.success == false) {
+        dispatch(setError(res.data.errorMsg))
+        return
+      }
       setMessages([...messages, res.data])
       socket.emit('new message', res.data)
     } catch (error) {
@@ -121,7 +130,13 @@ const ChatArea = () => {
           </div>
         </div>
 
-        <div className={`${darkMode && 'dark-primary'} flex-1 bg-white mt-3 rounded-xl shadow px-3 overflow-auto`}>
+        <div className={`${darkMode && 'dark-primary'} relative flex-1 bg-white mt-3 rounded-xl shadow px-3 overflow-auto`}>
+          {errorMsg && (
+          <div className='z-20 fixed top-40 left-1/2 flex bg-red-50 pr-3'>
+            <Alert className='transition-opacity' severity="error">{errorMsg}</Alert>
+            <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+          </div>
+          )}
           {loading ? 
             (
             <div className='flex justify-center items-center h-full'>
@@ -152,6 +167,12 @@ const ChatArea = () => {
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
             placeholder='Message...' 
             style={{
               scrollbarWidth: 'none',

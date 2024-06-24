@@ -11,6 +11,7 @@ import Users from './components/Users'
 import ChatArea from './components/ChatArea'
 import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
+import User from './components/User'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -36,6 +37,7 @@ const App = () => {
               <Route path='create-group' element={<CreateGroup />}/>
               <Route path='users' element={<Users />}/>
               <Route path='groups' element={<Groups />}/>
+              <Route path='user' element={<User />} />
               <Route path='*' element={<NoConvoOpen />} />
             </Route>
           </Route>
