@@ -11,15 +11,13 @@ import {useNavigate} from 'react-router-dom'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { CircularProgress } from '@mui/material';
-import io from 'socket.io-client'
 import Alert from '@mui/material/Alert'
 import { clearError, setError } from '../redux/errorSlice/errorSlice'
 import { useDispatch } from 'react-redux'
 
-const ChatArea = () => {
+const ChatArea = ({socket}) => {
   const dispatch = useDispatch()
   const latestMessage = useRef(null)
-  const [socketConnectionStatus, setSocketConnectionStatus] = useState(false)
   const [loading, setLoading] = useState(true)
   const [chatName, setChatName] = useState('')
   const [text, setText] = useState('')
@@ -31,30 +29,23 @@ const ChatArea = () => {
   const {chatId} = useParams()
   const [test, setTest] = useState(true)
 
-  const socket = io('http://localhost:5000')
   
   // scroll to latest message
   useEffect(() => {
     latestMessage.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // socket connection (setup)
-  useEffect(() => {
-    socket.emit('setup', {data: user})
-    socket.on('connection', () => {
-      setSocketConnectionStatus(!socketConnectionStatus)
-    })
-  }, [])
-
   // socket message received
   useEffect(() => {
     socket.on('message received', (message) => {
+      console.log('message received')
+      if (message.chat._id.toString() !== chatId.toString()) return
       setMessages(prevState => [...prevState, message])
     })
     return () => {
       socket.off('message received')
     }
-  }, [])
+  }, [chatId, socket])
 
   // fetch messages and socket join chat
   useEffect(() => {
@@ -78,7 +69,7 @@ const ChatArea = () => {
         setLoading(false)
         socket.emit('join chat', chatId)
       } catch (error) {
-        console.log(error.response.data)
+        dispatch(setError(error.response.data))
     }}
     fetchMessages()
   }, [chatId, user._id])
@@ -103,7 +94,7 @@ const ChatArea = () => {
       setMessages([...messages, res.data])
       socket.emit('new message', res.data)
     } catch (error) {
-      console.log(error)
+      dispatch(setError("Message not sent"))
     }
   }
 

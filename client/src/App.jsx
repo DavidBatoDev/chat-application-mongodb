@@ -14,10 +14,36 @@ import MobileNavBar from './pages/MobileNavBar'
 import User from './components/User'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import io from 'socket.io-client'
 
 const App = () => {
+  const socket = io('http://localhost:5000')
+  const [socketConnectionStatus, setSocketConnectionStatus] = useState(false)
+  const { user } = useSelector(state => state.user)
   const { darkMode } = useSelector(state => state.theme)
+
+    // socket connection (setup)
+  useEffect(() => {
+    if (!user) return
+    socket.emit('setup', {data: user})
+    socket.on('connection', () => {
+      setSocketConnectionStatus(!socketConnectionStatus)
+    })
+
+    socket.on('connected', () => {
+      setSocketConnectionStatus(true)
+    })
+
+    socket.on('disconnect', () => {
+      setSocketConnectionStatus(false)
+    })
+
+    return () => {
+      socket.off('connection')
+      socket.off('connected')
+      socket.off('disconnect')
+    }
+  }, [socket])
 
   return (
     <BrowserRouter>
@@ -30,9 +56,9 @@ const App = () => {
           <Route path='/register' element={<Register />} />
           <Route element={<ProtectedRoute />}>
             <Route path='/nav' element={<MobileNavBar />}/>
-            <Route path='app/*' element={<MainContainer />}>
+            <Route path='app/*' element={<MainContainer socket={socket}/>}>
               <Route path='' element={<NoConvoOpen />}/>
-              <Route path='chat/:chatId' element={<ChatArea />}/>
+              <Route path='chat/:chatId' element={<ChatArea socket={socket}/>}/>
               <Route path='no-convo' element={<NoConvoOpen />}/>
               <Route path='create-group' element={<CreateGroup />}/>
               <Route path='users' element={<Users />}/>

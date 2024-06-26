@@ -14,7 +14,7 @@ import cors from 'cors';
 dotenv.config()
 const app = express();
 const httpServer = createServer(app);
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
 const DB_URI = process.env.MONGODB_URI;
 
 //middlewares
@@ -65,6 +65,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('join chat', (chatId) => {
+        console.log('joining chat ', chatId)
         socket.join(chatId)
     })
 
@@ -72,15 +73,22 @@ io.on('connection', (socket) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
         try {
-            await chat.users.forEach(user => {
-                if (user._id !== messageStatus.sender._id) {
-                    socket.in(user._id).emit('message received', messageStatus)
+            for (const user of chat.users) {
+                if (user._id.toString() !== messageStatus.sender._id.toString()) {
+                    console.log('emmiting message to', user.name, 'in', chat.chatName == 'sender' ? user.name : chat.chatName)
+                    socket.in(user._id).emit('message received', messageStatus);
                 }
-            console.log('message sent')
-            })
+            }
         } catch (error) {
             console.log(error)
             socket.emit('error', {message: 'Error sending message'})
         }
     })
+
+    socket.on('disconnect', () => {
+        console.log('user disconnected')
+        socket.rooms.forEach(room => {
+            socket.leave(room);
+        });
+    });
 })
