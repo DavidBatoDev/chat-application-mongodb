@@ -21,7 +21,11 @@ const Login = () => {
     email: '',
     password: ''
   })
-  const {loading, error} = useSelector(state => state.user)
+  const {user, loading, error} = useSelector(state => state.user)
+
+  useEffect(() => {
+    user && navigate('/app/chat')
+  }, [user])
 
   const handleChange = (e) => {
     setFormBody({

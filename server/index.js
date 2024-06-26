@@ -73,12 +73,16 @@ io.on('connection', (socket) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
         try {
-            for (const user of chat.users) {
-                if (user._id.toString() !== messageStatus.sender._id.toString()) {
-                    console.log('emmiting message to', user.name, 'in', chat.chatName == 'sender' ? user.name : chat.chatName)
-                    socket.in(user._id).emit('message received', messageStatus);
-                }
-            }
+            // // option 1
+            // for (const user of chat.users) {
+            //     if (user._id.toString() !== messageStatus.sender._id.toString()) {
+            //         console.log('emmiting message to', user.name, 'in', chat.chatName == 'sender' ? user.name : chat.chatName)
+            //         socket.in(user._id).emit('message received', messageStatus);
+            //     }
+            // }
+            // // option 2
+            console.log('emmiting message to', chat.chatName)
+            socket.in(chat._id).emit('message received', messageStatus);
         } catch (error) {
             console.log(error)
             socket.emit('error', {message: 'Error sending message'})
