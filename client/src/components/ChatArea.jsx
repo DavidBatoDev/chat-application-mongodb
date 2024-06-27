@@ -22,11 +22,12 @@ const ChatArea = ({socket}) => {
   const [chatName, setChatName] = useState('')
   const [text, setText] = useState('')
   const [messages, setMessages] = useState([])
+  const {chatId} = useParams()
+  const [prevChatId, setPrevChatId] = useState(chatId)
   const navigate = useNavigate()
   const {user} = useSelector(state => state.user)
   const {darkMode} = useSelector(state => state.theme)
   const {errorMsg} = useSelector(state => state.error)
-  const {chatId} = useParams()
   const [test, setTest] = useState(true)
 
   
@@ -65,8 +66,10 @@ const ChatArea = ({socket}) => {
           const friendName = res.data.chat.users.find(u => u._id !== user._id)
           setChatName(friendName.name)
         }
-        setLoading(false)
+        socket.emit('leave chat', prevChatId)
+        setPrevChatId(chatId)
         socket.emit('join chat', chatId)
+        setLoading(false)
       } catch (error) {
         dispatch(setError(error.response.data))
     }}

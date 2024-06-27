@@ -69,6 +69,11 @@ io.on('connection', (socket) => {
         socket.join(chatId)
     })
 
+    socket.on('leave chat', (chatId) => {
+        console.log('leaving chat ', chatId);
+        socket.leave(chatId);
+    });
+
     socket.on('new message', async (messageStatus) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
