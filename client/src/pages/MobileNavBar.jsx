@@ -14,12 +14,13 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import axios from 'axios'
 
-const MobileNavBar = ({socket}) => {
+const MobileNavBar = () => {
     const [convos, setConvos] = useState([])
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const {darkMode} = useSelector(state => state.theme)
     const [users, setUsers] = useState([])
+    const {socket} = useSelector(state => state.socket)
     useEffect(() => {
       const fetchUsersChat = async () => {
         try {

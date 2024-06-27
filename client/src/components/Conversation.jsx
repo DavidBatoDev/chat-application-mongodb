@@ -3,12 +3,13 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-const Conversation = ({ convo, socket }) => {
+const Conversation = ({ convo }) => {
   const [latestMessage, setLatestMessage] = useState(convo?.latestMessage?.content);
   const navigate = useNavigate();
   const { darkMode } = useSelector(state => state.theme);
   const { user } = useSelector(state => state.user);
   const isGroupChat = convo.isGroupChat;
+  const {socket} = useSelector(state => state.socket);
 
   useEffect(() => {
     socket.on('update message', message => {

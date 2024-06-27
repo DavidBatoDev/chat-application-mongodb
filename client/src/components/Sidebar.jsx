@@ -12,7 +12,7 @@ import {logout} from '../redux/userSlice/userSlice'
 import { useDispatch } from 'react-redux';
 import axios from 'axios'
 
-const Sidebar = ({socket}) => {
+const Sidebar = () => {
   const dispatch = useDispatch()
   const {darkMode} = useSelector(state => state.theme)
   const navigate = useNavigate()
@@ -70,7 +70,7 @@ const Sidebar = ({socket}) => {
           <input type="text" placeholder='Search' className='w-full bg-transparent border-b-2 border-slate-500 focus:outline-none' />
         </div>
       </div>
-      <Conversations convos={convos} socket={socket} />
+      <Conversations convos={convos} />
     </div>
   )
 }

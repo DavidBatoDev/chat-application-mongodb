@@ -13,18 +13,31 @@ import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
 import User from './components/User'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
-import io from 'socket.io-client'
+import { 
+  initializeSocket,
+  disconnectSocket
+ } from './redux/socketSlice/socketSlice'
 
 const App = () => {
-  const socket = io('http://localhost:5000')
+  const dispatch = useDispatch()
   const [socketConnectionStatus, setSocketConnectionStatus] = useState(false)
   const { user } = useSelector(state => state.user)
   const { darkMode } = useSelector(state => state.theme)
+  const {socket} = useSelector(state => state.socket)
+  
+  // socket connection (initialization)
+  useEffect(() => {
+    dispatch(initializeSocket('http://localhost:5000'))
+    return () => {
+      dispatch(disconnectSocket())
+    }
+  }, [])
 
     // socket connection (setup)
   useEffect(() => {
-    if (!user) return
+    if (!user || !socket) return
     socket.emit('setup', {data: user})
     socket.on('connection', () => {
       setSocketConnectionStatus(!socketConnectionStatus)
@@ -43,7 +56,7 @@ const App = () => {
       socket.off('connected')
       socket.off('disconnect')
     }
-  }, [socket])
+  }, [socket, user])
 
   return (
     <BrowserRouter>
@@ -55,10 +68,10 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='/nav' element={<MobileNavBar socket={socket} />}/>
-            <Route path='app/*' element={<MainContainer socket={socket}/>}>
+            <Route path='/nav' element={<MobileNavBar />}/>
+            <Route path='app/*' element={<MainContainer />}>
               <Route path='' element={<NoConvoOpen />}/>
-              <Route path='chat/:chatId' element={<ChatArea socket={socket}/>}/>
+              <Route path='chat/:chatId' element={<ChatArea />}/>
               <Route path='no-convo' element={<NoConvoOpen />}/>
               <Route path='create-group' element={<CreateGroup />}/>
               <Route path='users' element={<Users />}/>

@@ -15,7 +15,7 @@ import Alert from '@mui/material/Alert'
 import { clearError, setError } from '../redux/errorSlice/errorSlice'
 import { useDispatch } from 'react-redux'
 
-const ChatArea = ({socket}) => {
+const ChatArea = () => {
   const dispatch = useDispatch()
   const latestMessage = useRef(null)
   const [loading, setLoading] = useState(true)
@@ -28,9 +28,8 @@ const ChatArea = ({socket}) => {
   const {user} = useSelector(state => state.user)
   const {darkMode} = useSelector(state => state.theme)
   const {errorMsg} = useSelector(state => state.error)
-  const [test, setTest] = useState(true)
+  const {socket} = useSelector(state => state.socket)
 
-  
   // scroll to latest message
   useEffect(() => {
     latestMessage.current?.scrollIntoView({ behavior: 'smooth' })
@@ -38,6 +37,7 @@ const ChatArea = ({socket}) => {
 
   // socket message received
   useEffect(() => {
+    if (!socket) return
     socket.on('message received', (message) => {
       console.log('message received', message.content)
       setMessages(prevState => [...prevState, message])
