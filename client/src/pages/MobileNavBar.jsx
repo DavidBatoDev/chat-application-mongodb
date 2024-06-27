@@ -14,7 +14,7 @@ import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import axios from 'axios'
 
-const MobileNavBar = () => {
+const MobileNavBar = ({socket}) => {
     const [convos, setConvos] = useState([])
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -106,7 +106,7 @@ const MobileNavBar = () => {
                 display: 'none' 
               }
             }}>
-        <Conversations convos={convos} />
+        <Conversations convos={convos} socket={socket} />
        </div>
     </div>
   )

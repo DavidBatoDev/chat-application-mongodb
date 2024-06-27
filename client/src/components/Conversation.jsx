@@ -10,18 +10,18 @@ const Conversation = ({ convo, socket }) => {
   const { user } = useSelector(state => state.user);
   const isGroupChat = convo.isGroupChat;
 
-  // useEffect(() => {
-  //   socket.on('update message', message => {
-  //     if (convo._id.toString() === message.chat._id.toString()) {
-  //       console.log('message received')
-  //       setLatestMessage(message.content);
-  //     }
-  //   });
+  useEffect(() => {
+    socket.on('update message', message => {
+      if (convo._id.toString() === message.chat._id.toString()) {
+        console.log('message received')
+        setLatestMessage(message.content);
+      }
+    });
 
-  //   return () => {
-  //     socket.off('update message');
-  //   };
-  // }, [convo._id]);
+    return () => {
+      socket.off('update message');
+    };
+  }, [convo._id, socket]);
 
   const chatName = !isGroupChat ? 
     convo.users.find(u => u._id !== user._id).name

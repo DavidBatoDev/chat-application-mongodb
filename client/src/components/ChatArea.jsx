@@ -90,7 +90,7 @@ const ChatArea = ({socket}) => {
         dispatch(setError(res.data.errorMsg))
         return
       }
-      setMessages([...messages, res.data])
+      // setMessages([...messages, res.data])
       socket.emit('new message', res.data)
     } catch (error) {
       dispatch(setError("Message not sent"))

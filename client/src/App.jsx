@@ -55,7 +55,7 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route element={<ProtectedRoute />}>
-            <Route path='/nav' element={<MobileNavBar />}/>
+            <Route path='/nav' element={<MobileNavBar socket={socket} />}/>
             <Route path='app/*' element={<MainContainer socket={socket}/>}>
               <Route path='' element={<NoConvoOpen />}/>
               <Route path='chat/:chatId' element={<ChatArea socket={socket}/>}/>
