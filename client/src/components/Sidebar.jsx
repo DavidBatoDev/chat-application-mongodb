@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import Conversations from './Conversations';
 import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -8,35 +8,37 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import { IconButton } from '@mui/material';
 import { useSelector } from 'react-redux';
-import {logout} from '../redux/userSlice/userSlice'
+import { logout } from '../redux/userSlice/userSlice';
 import { useDispatch } from 'react-redux';
-import axios from 'axios'
+import axios from 'axios';
 
 const Sidebar = () => {
-  const dispatch = useDispatch()
-  const {user} = useSelector(state => state.user)
-  const {socket} = useSelector(state => state.socket)
-  const {darkMode} = useSelector(state => state.theme)
-  const navigate = useNavigate()
-  const [convos, setConvos] = useState([])
+  const dispatch = useDispatch();
+  const { user } = useSelector(state => state.user);
+  const { socket } = useSelector(state => state.socket);
+  const { darkMode } = useSelector(state => state.theme);
+  const navigate = useNavigate();
+  const [convos, setConvos] = useState([]);
+  const [highlightedConvos, setHighlightedConvos] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
 
   const fetchUsersChat = async () => {
     try {
-      const token = JSON.parse(localStorage.getItem('authToken'))
+      const token = JSON.parse(localStorage.getItem('authToken'));
       const res = await axios.get('/api/chat', {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      })
-      setConvos(res.data)
+      });
+      setConvos(res.data);
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error.response.data);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUsersChat()
-  }, [])
+    fetchUsersChat();
+  }, []);
 
   useEffect(() => {
     if (!socket) return;
@@ -61,10 +63,23 @@ const Sidebar = () => {
       console.log('sorting convo', user.name);
     });
 
+    socket.on('update message', (message) => {
+      if (message.sender._id !== user._id && message.chat._id !== currentChat) {
+        setHighlightedConvos(prevState => [...prevState, message.chat._id]);
+      }
+    });
+
     return () => {
       socket.off('sort convo');
+      socket.off('update message');
     };
-  }, [socket, user.name]);
+  }, [socket, user.name, currentChat]);
+
+  const handleConversationClick = (convoId) => {
+    setCurrentChat(convoId);
+    setHighlightedConvos(prevState => prevState.filter(id => id !== convoId));
+    navigate(`/app/chat/${convoId}`);
+  };
 
   return (
     <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
@@ -94,9 +109,9 @@ const Sidebar = () => {
           <input type="text" placeholder='Search' className='w-full bg-transparent border-b-2 border-slate-500 focus:outline-none' />
         </div>
       </div>
-      <Conversations convos={convos} />
+      <Conversations currentChat={currentChat} convos={convos} highlightedConvos={highlightedConvos} onConversationClick={handleConversationClick} />
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
