@@ -84,6 +84,7 @@ io.on('connection', (socket) => {
             io.to(chat._id).emit('message received', messageStatus);
             for (const user of chat.users) {
                 io.to(user._id).emit('update message', messageStatus);
+                io.to(user._id).emit('sort convo', messageStatus);
             }
 
         } catch (error) {

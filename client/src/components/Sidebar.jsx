@@ -14,33 +14,57 @@ import axios from 'axios'
 
 const Sidebar = () => {
   const dispatch = useDispatch()
+  const {user} = useSelector(state => state.user)
+  const {socket} = useSelector(state => state.socket)
   const {darkMode} = useSelector(state => state.theme)
   const navigate = useNavigate()
   const [convos, setConvos] = useState([])
 
-  useEffect(() => {
-    const fetchUsersChat = async () => {
-      try {
-        const token = JSON.parse(localStorage.getItem('authToken'))
-        const res = await axios.get('/api/chat', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-        setConvos(res.data)
-      } catch (error) {
-        console.log(error.response.data)
-      }
+  const fetchUsersChat = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem('authToken'))
+      const res = await axios.get('/api/chat', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      setConvos(res.data)
+    } catch (error) {
+      console.log(error.response.data)
     }
+  }
+
+  useEffect(() => {
     fetchUsersChat()
   }, [])
 
-  const handleLogout = () => {
-    dispatch(logout())
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('userData')
-    navigate('/login')
-  }
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('sort convo', (message) => {
+      setConvos((prevConvos) => {
+        const updatedConvos = prevConvos.map((convo) => {
+          if (convo._id === message.chat._id) {
+            return {
+              ...convo,
+              latestMessage: message,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return convo;
+        });
+
+        updatedConvos.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+        return updatedConvos;
+      });
+      console.log('sorting convo', user.name);
+    });
+
+    return () => {
+      socket.off('sort convo');
+    };
+  }, [socket, user.name]);
 
   return (
     <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>

@@ -39,7 +39,6 @@ const ChatArea = () => {
   useEffect(() => {
     if (!socket) return
     socket.on('message received', (message) => {
-      console.log('message received', message.content)
       setMessages(prevState => [...prevState, message])
     })
     return () => {
