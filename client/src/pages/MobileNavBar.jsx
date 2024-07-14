@@ -15,12 +15,14 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import axios from 'axios'
 
 const MobileNavBar = () => {
-    const [convos, setConvos] = useState([])
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
-    const {darkMode} = useSelector(state => state.theme)
-    const [users, setUsers] = useState([])
-    const {socket} = useSelector(state => state.socket)
+  const dispatch = useDispatch()
+  const {user} = useSelector(state => state.user)
+  const {darkMode} = useSelector(state => state.theme)
+  const {socket} = useSelector(state => state.socket)
+  const navigate = useNavigate()
+  const [convos, setConvos] = useState([])
+  const [highlightedConvos, setHighlightedConvos] = useState([]);
+
     useEffect(() => {
       const fetchUsersChat = async () => {
         try {
@@ -57,6 +59,45 @@ const MobileNavBar = () => {
   
       return () => window.removeEventListener('resize', handleResize);
     }, [window.innerWidth, navigate]);
+
+    useEffect(() => {
+      if (!socket) return;
+  
+      socket.on('sort convo', (message) => {
+        setConvos((prevConvos) => {
+          const updatedConvos = prevConvos.map((convo) => {
+            if (convo._id === message.chat._id) {
+              return {
+                ...convo,
+                latestMessage: message,
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            return convo;
+          });
+  
+          updatedConvos.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  
+          return updatedConvos;
+        });
+      });
+  
+      socket.on('update message', (message) => {
+        if (message.sender._id !== user._id) {
+          setHighlightedConvos(prevState => [...prevState, message.chat._id]);
+        }
+      });
+  
+      return () => {
+        socket.off('sort convo');
+        socket.off('update message');
+      };
+    }, [socket, user.name]);
+
+    const handleConversationClick = (convoId) => {
+      setHighlightedConvos(prevState => prevState.filter(id => id !== convoId));
+      navigate(`/app/chat/${convoId}`);
+    };
 
   return (
     <div className={`${darkMode && 'dark-secondary'} w-screen h-screen p-5 md:hidden flex flex-col`}>
@@ -107,7 +148,7 @@ const MobileNavBar = () => {
                 display: 'none' 
               }
             }}>
-        <Conversations convos={convos} socket={socket} />
+        <Conversations convos={convos} highlightedConvos={highlightedConvos} onConversationClick={handleConversationClick} />
        </div>
     </div>
   )

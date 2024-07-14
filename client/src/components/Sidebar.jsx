@@ -38,6 +38,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     fetchUsersChat();
+    localStorage.getItem('highlightedConvos') && setHighlightedConvos(JSON.parse(localStorage.getItem('highlightedConvos')));
   }, []);
 
   useEffect(() => {
@@ -60,12 +61,12 @@ const Sidebar = () => {
 
         return updatedConvos;
       });
-      console.log('sorting convo', user.name);
     });
 
     socket.on('update message', (message) => {
       if (message.sender._id !== user._id && message.chat._id !== currentChat) {
         setHighlightedConvos(prevState => [...prevState, message.chat._id]);
+        localStorage.setItem('highlightedConvos', JSON.stringify([...highlightedConvos, message.chat._id]));
       }
     });
 

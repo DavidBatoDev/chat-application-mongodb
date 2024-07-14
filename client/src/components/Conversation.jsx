@@ -13,7 +13,9 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
   const [isActive, setIsActive] = useState(false)
 
   useEffect(() => {
-    socket.on('update message', message => {
+    if (!socket) return
+    socket.on('update latest', message => {
+      console.log('update latest', message.content);
       if (convo._id.toString() === message.chat._id.toString()) {
         setLatestMessage(message.content);
       }
@@ -29,7 +31,6 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
     : convo.chatName;
 
   useEffect(() => {
-    console.log(convo._id)
 
     if (currentChat == convo?._id) {
       setIsActive(true)
@@ -44,7 +45,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
   return (
     <div
       onClick={() => onConversationClick(convo._id)}
-      className={`flex items-center md:px-5 py-3 gap-2 
+      className={`flex items-center md:px-5 py-3 gap-2 relative
         ${darkMode ? 'hover:bg-gray-800 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-100'} 
         cursor-pointer`}
     >
@@ -53,6 +54,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
         <h1 className={`${isHighlighted ? 'font-bold' : ''} text-md`}>{chatName}</h1>
         <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{latestMessage}</p>
       </div>
+      {isHighlighted && <div className='absolute top-7 right-5 h-3 w-3 bg-gray-500 rounded-full'></div>}
     </div>
   );
 };

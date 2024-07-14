@@ -48,6 +48,7 @@ const ChatArea = () => {
 
   // fetch messages and socket join chat
   useEffect(() => {
+    // if (!socket) return
     const fetchMessages = async () => {
       try {
         setChatName('')
