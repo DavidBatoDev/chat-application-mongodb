@@ -20,6 +20,7 @@ const ChatArea = () => {
   const latestMessage = useRef(null)
   const [loading, setLoading] = useState(true)
   const [chatName, setChatName] = useState('')
+  const [chatPic, setChatPic] = useState(null)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState([])
   const {chatId} = useParams()
@@ -48,7 +49,7 @@ const ChatArea = () => {
 
   // fetch messages and socket join chat
   useEffect(() => {
-    // if (!socket) return
+    if (!socket) return
     const fetchMessages = async () => {
       try {
         setChatName('')
@@ -63,8 +64,9 @@ const ChatArea = () => {
         if (res.data.chat.isGroupChat) {
           setChatName(res.data.chat.chatName)
         } else {
-          const friendName = res.data.chat.users.find(u => u._id !== user._id)
-          setChatName(friendName.name)
+          const friend = res.data.chat.users.find(u => u._id !== user._id)
+          setChatName(friend.name)
+          setChatPic(friend?.profilePic)
         }
         socket.emit('leave chat', prevChatId)
         setPrevChatId(chatId)
@@ -110,7 +112,10 @@ const ChatArea = () => {
                 <KeyboardBackspaceIcon className='text-slate-500' />
               </IconButton>
             </div>
-            <AccountCircleIcon className='text-slate-500 mr-2' />
+              <img 
+              src={chatPic} alt="" 
+              className='h-7 w-7 object-cover rounded-full mr-2'
+            />
             <div className='flex flex-col'>
               <h1 className='font-semibold'>{chatName}</h1>
               <p className='text-xs text-green-600'>online</p>

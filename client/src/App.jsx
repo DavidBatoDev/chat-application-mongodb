@@ -7,11 +7,13 @@ import Theme from './components/Theme'
 import ProtectedRoute from './components/ProtectedRoute'
 import NoConvoOpen from './components/NoConvoOpen'
 import CreateGroup from './components/CreateGroup'
+import Profile from './components/Profile'
 import Users from './components/Users'
 import ChatArea from './components/ChatArea'
 import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
-import User from './components/User'
+import EditProfile from './components/EditProfile'
+import ChatInfo from './components/ChatInfo'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -72,11 +74,13 @@ const App = () => {
             <Route path='app/*' element={<MainContainer />}>
               <Route path='' element={<NoConvoOpen />}/>
               <Route path='chat/:chatId' element={<ChatArea />}/>
+              <Route path='chat-info/:chatId' element={<ChatArea />}/>
               <Route path='no-convo' element={<NoConvoOpen />}/>
               <Route path='create-group' element={<CreateGroup />}/>
               <Route path='users' element={<Users />}/>
               <Route path='groups' element={<Groups />}/>
-              <Route path='user' element={<User />} />
+              <Route path='profile' element={<Profile />} />
+              <Route path='edit-profile' element={<EditProfile />} />
               <Route path='*' element={<NoConvoOpen />} />
             </Route>
           </Route>

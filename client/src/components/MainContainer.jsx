@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 const MainContainer = () => {
   return (
-    <div className='relative bg md:h-[90vh] md:w-[90vw] h-screen w-screen bg-white md:rounded-3xl flex shadow-lg overflow-hidden'>
+    <div className='relative bg md:h-[85vh] md:w-[85vw] h-screen w-screen bg-white md:rounded-3xl flex shadow-lg overflow-hidden'>
         <Sidebar />
         <Outlet />
     </div>

@@ -23,6 +23,9 @@ const Sidebar = () => {
   const [currentChat, setCurrentChat] = useState(null);
 
   const fetchUsersChat = async () => {
+    if (!user) {
+      navigate('/login');
+    }
     try {
       const token = JSON.parse(localStorage.getItem('authToken'));
       const res = await axios.get('/api/chat', {
@@ -37,6 +40,7 @@ const Sidebar = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     fetchUsersChat();
     localStorage.getItem('highlightedConvos') && setHighlightedConvos(JSON.parse(localStorage.getItem('highlightedConvos')));
   }, []);
@@ -85,11 +89,13 @@ const Sidebar = () => {
   return (
     <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
       {/* nav */}
-      <nav className={`${darkMode && 'dark-primary'} flex justify-between my-5 mx-3 rounded-xl p-3 bg-white`}>
-        <div onClick={() => navigate('/app/user')}>
+      <nav className={`${darkMode && 'dark-primary'} flex justify-between items-center my-5 mx-2 rounded-xl p-3 bg-white`}>
+        <div onClick={() => navigate('/app/profile')} className='flex items-center'>
           <IconButton>
-            <AccountCircleIcon className='text-slate-500' />
+            <img src={user?.profilePic} alt="" 
+            className='w-7 h-7 rounded-full object-cover'/>
           </IconButton>
+          <p className='hidden font-semibold lg:flex cursor-pointer'>{user.name}</p>
         </div>
         <div className='flex items-center'>
           <IconButton onClick={() => navigate('users')}>

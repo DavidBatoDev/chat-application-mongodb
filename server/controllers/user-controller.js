@@ -2,6 +2,18 @@ import User from '../models/user-model.js'
 import Chat from '../models/chat-model.js'
 import { errorHandler } from '../utils/errorHandler.js';
 
+export const fetchUser = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({message: 'Unauthorized'});
+        }
+        const user = await User.findById(req.user._id);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({message: error.message});
+    }
+}
+
 export const fetchUsers = async (req, res) => {
     try {
         if (!req.user) {
@@ -59,5 +71,27 @@ export const fetchRelatedUsers = async (req, res, next) => {
         res.status(200).json(relatedUsers);
     } catch (error) {
         next(error);
+    }
+}
+
+export const updateUser = async (req, res) => {
+    const { userId } = req.params;
+    console.log(userId);
+    try {
+        if (req.user._id.toString() !== userId.toString()) {
+            return res.status(401).json({message: 'Unauthorized'});
+        }
+        const user = await User.findByIdAndUpdate(userId, {
+            $set: {
+                name: req.body.name,
+                aboutMe: req.body.aboutMe,
+                profilePic: req.body.profilePic,
+                socials: req.body.socials
+            }
+        }, {new: true});
+        const { password, ...others } = user._doc;
+        res.status(200).json(others);
+    } catch (error) {
+        res.status(500).json({message: error.message});
     }
 }

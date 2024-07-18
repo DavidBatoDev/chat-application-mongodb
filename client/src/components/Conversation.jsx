@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { IconButton } from '@mui/material';
 
 const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }) => {
   const [isRead, setIsRead] = useState(false);
@@ -11,6 +10,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
   const isGroupChat = convo.isGroupChat;
   const { socket } = useSelector(state => state.socket);
   const [isActive, setIsActive] = useState(false)
+  const [profilePic, setProfilePic] = useState(null)
 
   useEffect(() => {
     if (!socket) return
@@ -42,6 +42,13 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
     // ${isActive ? darkMode && 'bg-slate-900' : ""}
     // ${isActive ? !darkMode && 'bg-slate-400' : ""}
 
+  useEffect(() => {
+    if (!convo.isGroupChat) {
+      const friend = convo.users.find(u => u._id !== user._id);
+      setProfilePic(friend?.profilePic);
+    }
+  }, [])
+
   return (
     <div
       onClick={() => onConversationClick(convo._id)}
@@ -49,7 +56,10 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
         ${darkMode ? 'hover:bg-gray-800 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-100'} 
         cursor-pointer`}
     >
-      <AccountCircleIcon className='text-slate-500' />
+      <img 
+        src={profilePic} alt="" 
+        className='h-7 w-7 object-cover rounded-full'/>
+
       <div>
         <h1 className={`${isHighlighted ? 'font-bold' : ''} text-md`}>{chatName}</h1>
         <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{latestMessage}</p>

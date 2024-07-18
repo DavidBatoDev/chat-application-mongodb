@@ -24,6 +24,10 @@ const Login = () => {
   const {user, loading, error} = useSelector(state => state.user)
 
   useEffect(() => {
+    () => dispatch(clearError())
+  }, [])
+
+  useEffect(() => {
     user && navigate('/app/chat')
   }, [user])
 
@@ -52,7 +56,8 @@ const Login = () => {
         navigate('/nav')
       }
     } catch (error) {
-      dispatch(loginFailure(error.response.data.errorMsg))
+      console.log(error.response.data)
+      // dispatch(loginFailure(error.response.data))
     }
   }
 

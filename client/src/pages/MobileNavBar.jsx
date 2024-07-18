@@ -100,12 +100,14 @@ const MobileNavBar = () => {
     };
 
   return (
-    <div className={`${darkMode && 'dark-secondary'} w-screen h-screen p-5 md:hidden flex flex-col`}>
+    <div className={`${darkMode && 'dark-secondary'} w-screen h-screen md:hidden p-5 flex flex-col`}>
        <div className={`flex ${darkMode && 'dark-primary'} bg-white p-3 rounded-xl`}>
         <nav className='w-full flex justify-between items-center'>
             <div className='flex items-center'>
-                <IconButton>
-                    <AccountCircleIcon className={`${darkMode && "text-slate-500"}`} />
+                <IconButton onClick={() => navigate('/app/profile')}>
+                    <img src={user?.profilePic} alt=""
+                      className='w-7 h-7 rounded-full object-cover'
+                    />
                 </IconButton>
                 Name
             </div>
@@ -148,7 +150,7 @@ const MobileNavBar = () => {
                 display: 'none' 
               }
             }}>
-        <Conversations convos={convos} highlightedConvos={highlightedConvos} onConversationClick={handleConversationClick} />
+            <Conversations convos={convos} highlightedConvos={highlightedConvos} onConversationClick={handleConversationClick} />
        </div>
     </div>
   )

@@ -15,17 +15,28 @@ const userSchema = new mongoose.Schema({
     },
     profilePic: {
         type: String,
+        default: "https://www.pngarts.com/files/10/Default-Profile-Picture-PNG-Download-Image.png",
+    },
+    aboutMe: {
+        type: String,
         default: "",
     },
-    chatRequests: [
+    socials: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Chat",
-        },
+            link: {
+                type: String,
+            },
+            username: {
+                type: String,
+            },
+            social: {
+                type: String,
+            },
+        }
     ]
 }, {
     timestamps: true,
-})
+});
 
 const User = mongoose.model("User", userSchema);
 export default User;

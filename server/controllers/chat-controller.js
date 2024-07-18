@@ -18,7 +18,7 @@ export const fetchChats = async (req, res, next) => {
         }
         chat = await User.populate(chat, {
             path: 'latestMessage.sender',
-            select: 'name email'
+            select: 'name email profilePic'
         })
         res.status(200).json(chat)
     } catch (error) {
