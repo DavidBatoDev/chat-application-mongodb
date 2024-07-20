@@ -3,21 +3,19 @@ import { useSelector } from 'react-redux';
 import { IconButton } from '@mui/material';
 
 const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }) => {
-  const [isRead, setIsRead] = useState(false);
-  const [latestMessage, setLatestMessage] = useState(convo?.latestMessage?.content);
   const { darkMode } = useSelector(state => state.theme);
   const { user } = useSelector(state => state.user);
   const isGroupChat = convo.isGroupChat;
   const { socket } = useSelector(state => state.socket);
-  const [isActive, setIsActive] = useState(false)
-  const [profilePic, setProfilePic] = useState(null)
+  const [isActive, setIsActive] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
 
   useEffect(() => {
-    if (!socket) return
+    if (!socket) return;
+
     socket.on('update latest', message => {
-      console.log('update latest', message.content);
       if (convo._id.toString() === message.chat._id.toString()) {
-        setLatestMessage(message.content);
+        convo.latestMessage = message;
       }
     });
 
@@ -31,22 +29,17 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
     : convo.chatName;
 
   useEffect(() => {
-    if (currentChat == convo?._id) {
-      setIsActive(true)
-    } else {
-      setIsActive(false)
-    }
-  }, [currentChat])
-
-    // ${isActive ? darkMode && 'bg-slate-900' : ""}
-    // ${isActive ? !darkMode && 'bg-slate-400' : ""}
+    setIsActive(currentChat === convo._id);
+  }, [currentChat, convo._id]);
 
   useEffect(() => {
     if (!convo.isGroupChat) {
       const friend = convo.users.find(u => u._id !== user._id);
       setProfilePic(friend?.profilePic);
+    } else {
+      setProfilePic(convo.groupImage);
     }
-  }, [])
+  }, [convo]);
 
   return (
     <div
@@ -61,7 +54,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
 
       <div>
         <h1 className={`${isHighlighted ? 'font-bold' : ''} text-md`}>{chatName}</h1>
-        <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{latestMessage}</p>
+        <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{convo.latestMessage.content}</p>
       </div>
       {isHighlighted && <div className='absolute top-7 right-5 h-3 w-3 bg-gray-500 rounded-full'></div>}
     </div>

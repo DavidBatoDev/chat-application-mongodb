@@ -47,12 +47,11 @@ const Sidebar = () => {
 
   useEffect(() => {
     if (!socket) return;
-
+  
     socket.on('update chat', (chat) => {
-      console.log('update chat 52', user.name);
       setConvos((prevConvos) => [chat, ...prevConvos]);
-    })
-
+    });
+  
     socket.on('sort convo', (message) => {
       setConvos((prevConvos) => {
         const updatedConvos = prevConvos.map((convo) => {
@@ -65,26 +64,27 @@ const Sidebar = () => {
           }
           return convo;
         });
-
+  
         updatedConvos.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
+  
         return updatedConvos;
       });
     });
-
+  
     socket.on('update message', (message) => {
       if (message.sender._id !== user._id && message.chat._id !== currentChat) {
         setHighlightedConvos(prevState => [...prevState, message.chat._id]);
         localStorage.setItem('highlightedConvos', JSON.stringify([...highlightedConvos, message.chat._id]));
       }
     });
-
+  
     return () => {
       socket.off('update chat');
       socket.off('sort convo');
       socket.off('update message');
     };
   }, [socket, user.name, currentChat]);
+
 
   const handleConversationClick = (convoId) => {
     setCurrentChat(convoId);
