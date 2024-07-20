@@ -31,7 +31,6 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
     : convo.chatName;
 
   useEffect(() => {
-
     if (currentChat == convo?._id) {
       setIsActive(true)
     } else {

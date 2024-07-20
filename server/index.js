@@ -94,6 +94,18 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('new chat', async (chat) => {
+        console.log('new chat', chat)
+        try {
+            for (const user of chat.users) {
+                io.to(user._id).emit('update chat', chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
     socket.on('disconnect', () => {
         console.log('user disconnected')
         socket.rooms.forEach(room => {

@@ -29,6 +29,7 @@ export const fetchChats = async (req, res, next) => {
 export const fetchChat = async (req, res, next) => {
     const {userId} = req.params
     const currentUserId = req.user._id
+    let isNewChat = false
 
     if (!userId) { // check if userId is provided
         return next(errorHandler(400, 'User ID is required'))
@@ -50,8 +51,10 @@ export const fetchChat = async (req, res, next) => {
         select: "name email"  
     })
     if (chats.length > 0) { // if chat is found
-        return res.status(200).json(chats[0])
+        const chat = chats[0]
+        return res.status(200).json({chat, isNewChat})
     }
+    isNewChat = true
     const newChat = new Chat({ // create new chat
         chatName: "sender",
         users: [currentUserId, userId],
@@ -63,7 +66,7 @@ export const fetchChat = async (req, res, next) => {
                 path: 'users',
                 select: '-password'
             })
-            res.status(200).json(chat)
+            res.status(200).json({chat, isNewChat})
         })
         .catch((error) => {
             next(error)

@@ -48,6 +48,11 @@ const Sidebar = () => {
   useEffect(() => {
     if (!socket) return;
 
+    socket.on('update chat', (chat) => {
+      console.log('update chat 52', user.name);
+      setConvos((prevConvos) => [chat, ...prevConvos]);
+    })
+
     socket.on('sort convo', (message) => {
       setConvos((prevConvos) => {
         const updatedConvos = prevConvos.map((convo) => {
@@ -75,6 +80,7 @@ const Sidebar = () => {
     });
 
     return () => {
+      socket.off('update chat');
       socket.off('sort convo');
       socket.off('update message');
     };

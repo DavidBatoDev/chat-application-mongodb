@@ -19,16 +19,15 @@ const User = () => {
     const {userId} = useParams()
     const {darkMode} = useSelector(state => state.theme)
     const [userInfo, setUserInfo] = useState(null)
+    const {socket} = useSelector(state => state.socket)
 
     const fetchUserInfo = async () => {
         try {
-            console.log('fetching user info');
             const res = await axios.get(`/api/user/fetch-other-user/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${JSON.parse(localStorage.getItem('authToken'))}`
                 }
             })
-            console.log(res.data, 'hello')
             if (res.status !== 200) {
                 console.error('Error fetching user info:', res.data.message);
             }
@@ -46,13 +45,14 @@ const User = () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-            const chatId = await res.data._id
-            navigate(`/app/chat/${res.data._id}`)
+            navigate(`/app/chat/${res.data.chat._id}`)
+            if (res.data.isNewChat) {
+                socket.emit('new chat', res.data.chat)
+            }
         } catch (error) {
             console.log(error)
         }
     }
-
 
     useEffect(() => {
         fetchUserInfo()
@@ -101,11 +101,11 @@ const User = () => {
                         <p className='font-semibold'>User since</p>
                         <p>{user?.createdAt.split("T")[0]}</p>
                     </div>
-                    {userInfo?.socials.length > 1 && (
+                    {userInfo?.socials.length > 0 && (
                     <div>
                         <p className='font-semibold'>Socials</p>
                         <div className='flex flex-col mt-2 gap-2'>
-                            {user?.socials.map((social, index) => (
+                            {userInfo?.socials.map((social, index) => (
                                 <div key={index} className='flex gap-2'>
                                     {social.social === 'instagram' && <InstagramIcon />}
                                     {social.social === 'facebook' && <FacebookIcon />}

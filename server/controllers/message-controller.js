@@ -38,6 +38,7 @@ export const sendMessage = async (req, res, next) => {
             path: 'reciever',
             select: 'name email'
         })
+
         await Chat.findByIdAndUpdate(chatId, {latestMessage: message})
         res.status(200).json(message)
     } catch (error) {

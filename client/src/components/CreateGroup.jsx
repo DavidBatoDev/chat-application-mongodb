@@ -13,6 +13,7 @@ const CreateGroup = () => {
     const [groupName, setGroupName] = useState('')
     const [users, setUsers] = useState([])
     const [usersToBeAdded, setUsersToBeAdded] = useState([])
+    const {socket} = useSelector(state => state.socket)
     
     useEffect(() => {
         const fetchUsers = async () => {
@@ -51,8 +52,9 @@ const CreateGroup = () => {
             })
             if (res.data.success == false) return console.log(res.data.response.errorMsg)
             navigate(`/app/chat/${res.data._id}`)
+            socket.emit('new chat', res.data)
         } catch (error) {
-            console.log(error)
+            console.log(error.response.data.errorMsg)
         }
     }
 

@@ -57,7 +57,7 @@ const Login = () => {
       }
     } catch (error) {
       console.log(error.response.data)
-      // dispatch(loginFailure(error.response.data))
+      dispatch(loginFailure(error.response.data.errorMsg))
     }
   }
 
