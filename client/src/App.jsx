@@ -13,7 +13,7 @@ import ChatArea from './components/ChatArea'
 import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
 import EditProfile from './components/EditProfile'
-import ChatInfo from './components/ChatInfo'
+import User from './components/User'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -80,6 +80,7 @@ const App = () => {
               <Route path='users' element={<Users />}/>
               <Route path='groups' element={<Groups />}/>
               <Route path='profile' element={<Profile />} />
+              <Route path='user/:userId' element={<User />}/>
               <Route path='edit-profile' element={<EditProfile />} />
               <Route path='*' element={<NoConvoOpen />} />
             </Route>

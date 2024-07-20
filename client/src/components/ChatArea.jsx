@@ -23,6 +23,8 @@ const ChatArea = () => {
   const [chatPic, setChatPic] = useState(null)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState([])
+  const [isGroupChat, setIsGroupChat] = useState(false)
+  const [chatInfo, setChatInfo] = useState(null)
   const {chatId} = useParams()
   const [prevChatId, setPrevChatId] = useState(chatId)
   const navigate = useNavigate()
@@ -63,10 +65,14 @@ const ChatArea = () => {
         setMessages(res.data.messages)
         if (res.data.chat.isGroupChat) {
           setChatName(res.data.chat.chatName)
+          setIsGroupChat(true)
+          setChatInfo(res.data.chat)
         } else {
           const friend = res.data.chat.users.find(u => u._id !== user._id)
           setChatName(friend.name)
           setChatPic(friend?.profilePic)
+          setIsGroupChat(false)
+          setChatInfo(res.data.chat)
         }
         socket.emit('leave chat', prevChatId)
         setPrevChatId(chatId)
@@ -76,6 +82,10 @@ const ChatArea = () => {
         dispatch(setError(error.response.data))
     }}
     fetchMessages()
+
+    return () => {
+      socket.emit('leave chat', chatId)
+    }
   }, [chatId, user._id])
   
   // socket new message
@@ -102,6 +112,15 @@ const ChatArea = () => {
     }
   }
 
+  const handleViewChatProfile = () => {
+    if (isGroupChat) {
+      navigate(`/app/chat-info/${chatId}`)
+    } else {
+      const friend = chatInfo.users.find(u => u._id !== user._id)
+      navigate(`/app/user/${friend._id}`)
+    }
+  }
+
 
   return (
     <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[1] md:flex-[0.7] bg-slate-100 px-4`}>
@@ -112,13 +131,18 @@ const ChatArea = () => {
                 <KeyboardBackspaceIcon className='text-slate-500' />
               </IconButton>
             </div>
-              <img 
-              src={chatPic} alt="" 
-              className='h-7 w-7 object-cover rounded-full mr-2'
-            />
-            <div className='flex flex-col'>
-              <h1 className='font-semibold'>{chatName}</h1>
-              <p className='text-xs text-green-600'>online</p>
+            <div 
+              className='flex items-center'
+              onClick={handleViewChatProfile}  
+            >
+                <img 
+                src={chatPic} alt="" 
+                className='h-7 w-7 object-cover rounded-full mr-2'
+                />
+              <div className='flex flex-col'>
+                <h1 className='font-semibold'>{chatName}</h1>
+                <p className='text-xs text-green-600'>online</p>
+              </div>
             </div>
           </div>
           <div>

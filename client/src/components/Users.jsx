@@ -33,20 +33,20 @@ const Users = () => {
         fetchUsers()
     }, [search])
 
-    const handleFetchChat = async (userId) => {
-        try {
-            const token = JSON.parse(localStorage.getItem('authToken'))
-            const res = await axios.get(`/api/chat/fetchChat/${userId}`,{
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-           const chatId = await res.data._id
-            navigate(`/app/chat/${res.data._id}`)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const handleFetchChat = async (userId) => {
+    //     try {
+    //         const token = JSON.parse(localStorage.getItem('authToken'))
+    //         const res = await axios.get(`/api/chat/fetchChat/${userId}`,{
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         })
+    //        const chatId = await res.data._id
+    //         navigate(`/app/chat/${res.data._id}`)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     return (
         <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-1 md:flex-[0.7] bg-slate-100 px-4`}>
@@ -77,7 +77,7 @@ const Users = () => {
             <div className={`${darkMode && 'dark-primary'} bg-white flex-1 mb-3 rounded-xl p-3 pt-0`}>
                 <div className='flex flex-col overflow-auto mt-1 mb-3'>
                     {users.length > 0 && users.map(user => (
-                        <div onClick={() => handleFetchChat(user._id)} key={user._id} className={`cursor-pointer flex items-center py-3 border-b-2 ${darkMode ? "hover:bg-slate-700" : "hover:bg-slate-200"} rounded-xl px-3`}>
+                        <div onClick={() => navigate(`/app/user/${user._id}`)} key={user._id} className={`cursor-pointer flex items-center py-3 border-b-2 ${darkMode ? "hover:bg-slate-700" : "hover:bg-slate-200"} rounded-xl px-3`}>
                             <div className='flex items-center gap-2'>
                                 <AccountCircleIcon className='text-slate-400'/>
                                 {user.name}
