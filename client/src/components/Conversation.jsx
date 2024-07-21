@@ -37,7 +37,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
       const friend = convo.users.find(u => u._id !== user._id);
       setProfilePic(friend?.profilePic);
     } else {
-      setProfilePic(convo.groupImage);
+      setProfilePic(convo?.chatImage);
     }
   }, [convo]);
 

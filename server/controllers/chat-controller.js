@@ -26,10 +26,37 @@ export const fetchChats = async (req, res, next) => {
     }
 }
 
+export const fetchChatById = async (req, res, next) => {
+    const chatId = req.params.chatId
+    const userId = req.user._id
+    try {
+        if (!chatId) {
+            return next(errorHandler(400, 'Chat ID is required'))
+        }
+        if (!userId) {
+            return next(errorHandler(400, 'Not Authorized'))
+        }
+        let chat = await Chat.findOne({_id: chatId})
+            .populate('users', '-password')
+            .populate('groupAdmin', '-password')
+            .populate('latestMessage')
+        if (!chat) {
+            return next(errorHandler(404, 'Chat not found'))
+        }
+        chat = await User.populate(chat, {
+            path: 'latestMessage.sender',
+            select: 'name email profilePic'
+        })
+        res.status(200).json(chat)
+    } catch (error) {
+        next(error)
+    }
+}
+
 export const fetchChat = async (req, res, next) => {
     const {userId} = req.params
     const currentUserId = req.user._id
-    let isNewChat = false
+    let isNewChat = false // for socket.io
 
     if (!userId) { // check if userId is provided
         return next(errorHandler(400, 'User ID is required'))

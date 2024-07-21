@@ -65,6 +65,7 @@ const ChatArea = () => {
         setMessages(res.data.messages)
         if (res.data.chat.isGroupChat) {
           setChatName(res.data.chat.chatName)
+          setChatPic(res.data.chat.chatImage)
           setIsGroupChat(true)
           setChatInfo(res.data.chat)
         } else {
@@ -114,7 +115,7 @@ const ChatArea = () => {
 
   const handleViewChatProfile = () => {
     if (isGroupChat) {
-      navigate(`/app/chat-info/${chatId}`)
+      navigate(`/app/group-info/${chatId}`)
     } else {
       const friend = chatInfo.users.find(u => u._id !== user._id)
       navigate(`/app/user/${friend._id}`)

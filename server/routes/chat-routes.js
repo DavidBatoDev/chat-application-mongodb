@@ -2,6 +2,7 @@ import express from 'express';
 import {
     fetchChats,
     fetchChat,
+    fetchChatById,
     fetchUserGroups,
     createGroup,
     leftGroup,
@@ -15,6 +16,8 @@ const router = express.Router();
 router.get('/', authorizationHandler, fetchChats);  // fetch all the chats of a user
 
 router.get('/fetchGroups', authorizationHandler, fetchUserGroups); // fetch all the groups of a user
+
+router.get('/fetchChatById/:chatId', authorizationHandler, fetchChatById); // fetch chat by chatId
 
 router.get('/fetchChat/:userId', authorizationHandler, fetchChat); // fetch chat or create chat with a user (between current user and the user with userId)
 

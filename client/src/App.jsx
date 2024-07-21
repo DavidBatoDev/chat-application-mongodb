@@ -14,6 +14,7 @@ import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
 import EditProfile from './components/EditProfile'
 import User from './components/User'
+import GroupInfo from './components/GroupInfo'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
@@ -80,6 +81,7 @@ const App = () => {
               <Route path='users' element={<Users />}/>
               <Route path='groups' element={<Groups />}/>
               <Route path='profile' element={<Profile />} />
+              <Route path='group-info/:chatId' element={<GroupInfo />} />
               <Route path='user/:userId' element={<User />}/>
               <Route path='edit-profile' element={<EditProfile />} />
               <Route path='*' element={<NoConvoOpen />} />
