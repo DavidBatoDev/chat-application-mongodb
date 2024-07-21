@@ -54,7 +54,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
 
       <div>
         <h1 className={`${isHighlighted ? 'font-bold' : ''} text-md`}>{chatName}</h1>
-        <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{convo.latestMessage.content}</p>
+        <p className={` ${isHighlighted ? 'font-bold' : ''} text-xs max-w-32 truncate text-slate-500`}>{convo?.latestMessage?.content}</p>
       </div>
       {isHighlighted && <div className='absolute top-7 right-5 h-3 w-3 bg-gray-500 rounded-full'></div>}
     </div>

@@ -7,7 +7,7 @@ const chatSchema = new mongoose.Schema({
     },
     chatImage: {
         type: String,
-        default: "",
+        default: "https://www.freeiconspng.com/uploads/user-group-flat-icon-png-24.png"
     },
     users: [
         {

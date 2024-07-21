@@ -5,44 +5,80 @@ import { useSelector } from 'react-redux';
 import { IconButton } from '@mui/material';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import {
+    startLoading,
+    stopLoading,
+    setError,
+    clearError
+} from '../redux/errorSlice/errorSlice';
+import Alert from '@mui/material/Alert';
+import { CircularProgress } from '@mui/material';
+import Backdrop from '@mui/material/Backdrop';
 
 const Groups = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const {darkMode} = useSelector(state => state.theme)
+    const {message, loading} = useSelector(state => state.error)
     const [groups, setGroups] = useState([])
     const [search, setSearch] = useState('')
 
+    const fetchGroups = async () => {
+        const token = JSON.parse(localStorage.getItem("authToken") || null)
+        if (!token) return
+        const res = await axios.get(`/api/user/fetchGroups?search=${search}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        setGroups(res.data)
+    }
+    
     useEffect(() => {
-        const fetchGroups = async () => {
-            const token = JSON.parse(localStorage.getItem("authToken") || null)
-            if (!token) return
-            const res = await axios.get(`/api/user/fetchGroups?search=${search}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            setGroups(res.data)
-        }
+        dispatch(clearError())
         fetchGroups()
     }, [search])
 
     const handleJoinGroup = async (groupId) => {
         try {
+            dispatch(clearError())
+            dispatch(startLoading())
             const token = JSON.parse(localStorage.getItem("authToken") || null)
             const res = await axios.get(`/api/chat/joinGroup/${groupId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             })
+            console.log(res.data)
+            if (!res.data.success) {
+                dispatch(stopLoading())
+                dispatch(setError(res.data.message))
+                return
+            }
+            dispatch(stopLoading())
             navigate(`/app/chat/${groupId}`)
-
         } catch (error) {
-            console.log(error.response.data)
+            dispatch(stopLoading())
+            console.log(error.response.data.message)
+            dispatch(setError(error.response.data.message))
         }
     }
     return (
         <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-1 md:flex-[0.7] bg-slate-100 px-4`}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={loading}
+                >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            {message && (
+                <div className='fixed top-10 flex bg-red-50 pr-3'>
+                <Alert className='transition-opacity' severity="error">{message}</Alert>
+                <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+                </div>
+            )}
             <div className='flex flex-col gap-1 mt-2 w-full h-full'>
                 <div className={`${darkMode && 'dark-primary'} flex items-center w-full bg-white mt-3 py-2 rounded-xl`}>
                     <div className='md:hidden'>
