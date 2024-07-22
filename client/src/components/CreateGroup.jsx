@@ -27,7 +27,7 @@ const CreateGroup = () => {
                 })
                 setUsers(res.data)
             } catch (error) {
-                console.log(error.response.data)
+                console.log(error)
             }
         }
         fetchUsers()
@@ -50,11 +50,11 @@ const CreateGroup = () => {
                     Authorization: `Bearer ${token}`
                 }
             })
-            if (res.data.success == false) return console.log(res.data.response.errorMsg)
+            if (res.data.success == false) return console.log(res.data.response.message)
             navigate(`/app/chat/${res.data._id}`)
             socket.emit('new chat', res.data)
         } catch (error) {
-            console.log(error.response.data.errorMsg)
+            console.log(error.response.data.message)
         }
     }
 

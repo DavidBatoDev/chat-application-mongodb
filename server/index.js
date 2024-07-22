@@ -41,7 +41,7 @@ app.use((error, req, res, next) => {
     error.message = error.message || 'Internal server error';
     res.status(error.statusCode).json({
         success: false,
-        errorMsg: error.message
+        message: error.message
     });
 })
 
@@ -99,6 +99,18 @@ io.on('connection', (socket) => {
         try {
             for (const user of chat.users) {
                 io.to(user._id).emit('update chat', chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
+    socket.on('delete chat', async (chat) => {
+        try {
+            for (const user of chat.users) {
+                console.log('emit delete chat to', user)
+                io.to(user).emit('delete sidebar chat', chat);
             }
         } catch (error) {
             console.log(error)

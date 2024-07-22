@@ -51,6 +51,11 @@ const Sidebar = () => {
     socket.on('update chat', (chat) => {
       setConvos((prevConvos) => [chat, ...prevConvos]);
     });
+
+    socket.on('delete sidebar chat', (chat) => {
+      console.log('delete chat', chat);
+      setConvos((prevConvos) => prevConvos.filter((convo) => convo._id !== chat._id));
+    });
   
     socket.on('sort convo', (message) => {
       setConvos((prevConvos) => {
@@ -80,6 +85,7 @@ const Sidebar = () => {
   
     return () => {
       socket.off('update chat');
+      socket.off('delete sidebar chat');
       socket.off('sort convo');
       socket.off('update message');
     };

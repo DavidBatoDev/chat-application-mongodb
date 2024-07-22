@@ -1,4 +1,5 @@
 import Chat from '../models/chat-model.js'
+import Message from '../models/message-model.js'
 import User from '../models/user-model.js'
 import { errorHandler } from '../utils/errorHandler.js'
 import mongoose from 'mongoose'
@@ -238,6 +239,28 @@ export const joinGroup = async (req, res, next) => {
         .populate("users", "-password")
         .populate("groupAdmin", "-password")
         res.status(200).json(added)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export const deleteGroup = async (req, res, next) => {
+    const groupId = req.params.groupId
+    const currentUserId = req.user._id
+    try {
+        if (!groupId) {
+            return next(errorHandler(400, "Group ID is required"))
+        }
+        const groupChat = await Chat.findById(groupId)
+        if (!groupChat) {
+            return next(errorHandler(404, "Group chat not found"))
+        }
+        if (groupChat.groupAdmin.toString() !== currentUserId.toString()) {
+            return next(errorHandler(401, "You're not the group admin"))
+        }
+        await Chat.findByIdAndDelete(groupId)
+        await Message.deleteMany({chat: groupId})
+        res.status(200).json({chat: groupChat, message: "Group chat deleted successfully"})
     } catch (error) {
         next(error)
     }

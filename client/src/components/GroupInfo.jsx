@@ -7,36 +7,72 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import ChatIcon from '@mui/icons-material/Chat';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import {
+    setError,
+    clearError,
+    stopLoading,
+    startLoading
+} from '../redux/errorSlice/errorSlice';
+import { Alert } from '@mui/material';
+import { CircularProgress } from '@mui/material';
+import { Backdrop } from '@mui/material';
+
 
 const GroupInfo = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const {user} = useSelector(state => state.user)
+    const {message, loading} = useSelector(state => state.error)
     const {chatId} = useParams()
     const {darkMode} = useSelector(state => state.theme)
     const {socket} = useSelector(state => state.socket)
     const [chatInfo, setChatInfo] = useState(null)
 
+    console.log(message)
+
     const fetchChat = async (chatId) => {
         try {
-            const token = JSON.parse(localStorage.getItem('authToken'))
+            dispatch(startLoading());
+            const token = JSON.parse(localStorage.getItem('authToken'));
             const res = await axios.get(`/api/chat/fetchChatById/${chatId}`, {
                 headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            setChatInfo(res.data)
-            console.log(res.data)
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            dispatch(stopLoading());
+            setChatInfo(res.data);
         } catch (error) {
-            console.log(error.response.data)
+            dispatch(stopLoading());
+            dispatch(setError(error.response.data.message));
         }
-    }
+    };
+
+    const handleDeleteGroup = async () => {
+        try {
+            dispatch(startLoading());
+            const token = JSON.parse(localStorage.getItem('authToken'));
+            const res = await axios.delete(`/api/chat/delete-group/${chatId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            dispatch(stopLoading());
+            navigate('/app/groups');
+            socket.emit('delete chat', res.data.chat);
+        } catch (error) {
+            dispatch(stopLoading());
+            dispatch(setError(error.response.data.message));
+        }
+    };
 
     useEffect(() => {
+        dispatch(clearError())
         if (!user) return
         fetchChat(chatId)
         return () => {
             setChatInfo(null)
+            dispatch(clearError())
+            dispatch(stopLoading())
         }
     }, [chatId])
 
@@ -47,6 +83,19 @@ const GroupInfo = () => {
 
   return (
    <div className={`${darkMode && 'dark-theme'} flex flex-col h-full md:flex-[0.7] flex-1 bg-slate-100 px-4`}>
+        <Backdrop
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+            >
+            <CircularProgress color="inherit" />
+        </Backdrop>
+        {message && (
+            <div className='fixed top-10 flex bg-red-50 pr-3'>
+            <Alert className='transition-opacity' severity="error">{message}</Alert>
+            <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+            </div>
+        )}
+        
         <div className={`${darkMode && 'dark-primary'} h-full mb-3 bg-white p-4 mt-5 rounded-xl flex justify-between shadow overflow-y-scroll custom-scrollbar`}>
             <div className='absolute'>
               <IconButton onClick={() => navigate(-1)}>
@@ -89,7 +138,7 @@ const GroupInfo = () => {
                     dark-secondary w-full rounded-xl flex p-3 flex-col gap-5
                 `}>
                     <div>
-                        <p className='font-semibold'>Group Creator:</p>
+                        <p className='font-semibold'>Group Admin:</p>
                         <p>{chatInfo?.groupAdmin.name}</p>
                     </div>
                     <div>
@@ -106,6 +155,22 @@ const GroupInfo = () => {
                             ))}
                         </ul>
                     </div>
+                </div>
+
+                <div className='dark-secondary flex items-center gap-3 h-16 w-full p-5 rounded-xl mb-5'>
+                    {
+                        chatInfo?.groupAdmin._id === user._id ? (
+                            <>
+                            <button className='md:text-lg h-10 dark-primary rounded-full px-3 w-full text-sm'>Add Member</button>
+                            <button 
+                                onClick={handleDeleteGroup}
+                                className='md:text-lg rounded-full h-10 px-3 w-full bg-red-400 text-sm'>Delete Group</button>
+                            </>
+                        ) : (
+                            <button 
+                                className='md:text-lg rounded-full h-10 px-3 w-full bg-red-400 text-sm'>Leave Group</button>
+                        )
+                    }
                 </div>
             </div>
         </div>

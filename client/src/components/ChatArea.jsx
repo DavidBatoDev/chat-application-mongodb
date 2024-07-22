@@ -80,12 +80,13 @@ const ChatArea = () => {
         socket.emit('join chat', chatId)
         setLoading(false)
       } catch (error) {
-        dispatch(setError(error.response.data))
+        console.log(error.response.data)
     }}
     fetchMessages()
 
     return () => {
       socket.emit('leave chat', chatId)
+      dispatch(clearError())
     }
   }, [chatId, user._id])
   
@@ -103,7 +104,8 @@ const ChatArea = () => {
       })
       setText('')
       if (res.data?.success == false) {
-        dispatch(setError(res.data.errorMsg))
+        console.log(res.data.message)
+        dispatch(setError(res.data.message))
         return
       }
       // setMessages([...messages, res.data])
