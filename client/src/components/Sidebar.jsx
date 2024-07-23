@@ -95,6 +95,7 @@ const Sidebar = () => {
   const handleConversationClick = (convoId) => {
     setCurrentChat(convoId);
     setHighlightedConvos(prevState => prevState.filter(id => id !== convoId));
+    localStorage.setItem('highlightedConvos', JSON.stringify(highlightedConvos.filter(id => id !== convoId)));
     navigate(`/app/chat/${convoId}`);
   };
 

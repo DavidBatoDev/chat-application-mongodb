@@ -13,6 +13,7 @@ import ChatArea from './components/ChatArea'
 import Groups from './components/Groups'
 import MobileNavBar from './pages/MobileNavBar'
 import EditProfile from './components/EditProfile'
+import EditGroup from './components/EditGroup'
 import User from './components/User'
 import GroupInfo from './components/GroupInfo'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
@@ -84,6 +85,7 @@ const App = () => {
               <Route path='group-info/:chatId' element={<GroupInfo />} />
               <Route path='user/:userId' element={<User />}/>
               <Route path='edit-profile' element={<EditProfile />} />
+              <Route path='edit-group/:chatId' element={<EditGroup />} />
               <Route path='*' element={<NoConvoOpen />} />
             </Route>
           </Route>

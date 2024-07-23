@@ -77,7 +77,7 @@ export const fetchRelatedUsers = async (req, res, next) => {
         chats.forEach(chat => {
             chat.users.forEach(user => {
                 if (user._id.toString() !== currentUserId.toString() && !relatedUsers.includes(user)) {
-                    relatedUsers.push(user);
+                    relatedUsers.push(user)
                 }
             });
         });

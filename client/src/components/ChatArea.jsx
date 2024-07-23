@@ -30,8 +30,9 @@ const ChatArea = () => {
   const navigate = useNavigate()
   const {user} = useSelector(state => state.user)
   const {darkMode} = useSelector(state => state.theme)
-  const {errorMsg} = useSelector(state => state.error)
+  const {message} = useSelector(state => state.error)
   const {socket} = useSelector(state => state.socket)
+  const testError = 'Testing Error!'
 
   // scroll to latest message
   useEffect(() => {
@@ -52,6 +53,7 @@ const ChatArea = () => {
   // fetch messages and socket join chat
   useEffect(() => {
     if (!socket) return
+    dispatch(clearError())
     const fetchMessages = async () => {
       try {
         setChatName('')
@@ -86,6 +88,12 @@ const ChatArea = () => {
 
     return () => {
       socket.emit('leave chat', chatId)
+      setMessages([])
+      setChatName('')
+      setChatPic(null)
+      setIsGroupChat(false)
+      setChatInfo(null)
+      setLoading(false)
       dispatch(clearError())
     }
   }, [chatId, user._id])
@@ -93,6 +101,11 @@ const ChatArea = () => {
   // socket new message
   const handleSendMessage = async () => {
     try {
+      if (isGroupChat) {
+        const isMember = chatInfo.users.find(u => u._id === user._id)
+        if (!isMember) return dispatch(setError('You are not a member of this group'))
+      }
+      if (!text.trim()) return
       const token = JSON.parse(localStorage.getItem('authToken'))
       const res = await axios.post(`/api/message`, {
         content: text,
@@ -127,6 +140,12 @@ const ChatArea = () => {
 
   return (
     <div className={`${darkMode && 'dark-theme'} flex flex-col h-full flex-[1] md:flex-[0.7] bg-slate-100 px-4`}>
+        {message && (
+          <div className='z-20 fixed top-40 left-1/2 flex bg-red-50 pr-3'>
+            <Alert className='transition-opacity' severity="error">{message}</Alert>
+            <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
+          </div>
+        )}
         <div className={`${darkMode && 'dark-primary'} bg-white p-3 mt-5 rounded-xl flex justify-between shadow`}>
           <div className='flex items-center cursor-pointer'>
             <div className='md:hidden'>
@@ -156,12 +175,6 @@ const ChatArea = () => {
         </div>
 
         <div className={`${darkMode && 'dark-primary'} relative flex-1 bg-white mt-3 rounded-xl shadow px-3 overflow-auto`}>
-          {errorMsg && (
-          <div className='z-20 fixed top-40 left-1/2 flex bg-red-50 pr-3'>
-            <Alert className='transition-opacity' severity="error">{errorMsg}</Alert>
-            <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
-          </div>
-          )}
           {loading ? 
             (
             <div className='flex justify-center items-center h-full'>

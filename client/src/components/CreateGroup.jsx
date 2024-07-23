@@ -31,6 +31,10 @@ const CreateGroup = () => {
             }
         }
         fetchUsers()
+
+        return () => {
+            setUsers([])
+        }
     }, [])
 
     const handleSelectUser = (userId, checkbox) => {

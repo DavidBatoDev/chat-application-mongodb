@@ -265,3 +265,33 @@ export const deleteGroup = async (req, res, next) => {
         next(error)
     }
 }
+
+export const updateGroup = async (req, res, next) => {
+    const {groupId} = req.params
+    const {chatName ,chatImage, users} = req.body
+    const currentUserId = req.user._id
+    try {
+        if (!groupId) {
+            return next(errorHandler(400, "Group ID is required"))
+        }
+        const groupChat = await Chat.findById(groupId)
+        if (!groupChat) {
+            return next(errorHandler(404, "Group chat not found"))
+        }
+        if (groupChat.groupAdmin.toString() !== currentUserId.toString()) {
+            return next(errorHandler(401, "You're not the group admin"))
+        }
+        const usersThatIsRemoved = groupChat.users.toString().split(',').filter(user => !users.includes(user))
+        if (usersThatIsRemoved.includes(currentUserId)) {
+            return next(errorHandler(401, "You can't remove yourself from the group"))
+        }
+        const usersThatIsAdded = users.filter(user => !groupChat.users.includes(user))
+        groupChat.chatName = chatName
+        groupChat.chatImage = chatImage
+        groupChat.users = users
+        await groupChat.save()
+        res.status(200).json({chat: groupChat, usersThatIsRemoved, usersThatIsAdded})
+    } catch (error) {
+        next(error)
+    }
+}

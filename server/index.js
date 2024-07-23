@@ -118,6 +118,28 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('remove chat to user', async (data) => {
+        try {
+            for (const user of data.users) {
+                io.to(user).emit('delete sidebar chat', data.chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
+    socket.on('add chat to user', async (data) => {
+        try {
+            for (const user of data.users) {
+                io.to(user).emit('update chat', data.chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
     socket.on('disconnect', () => {
         console.log('user disconnected')
         socket.rooms.forEach(room => {

@@ -8,7 +8,8 @@ import {
     leftGroup,
     joinGroup,
     addGroupMember,
-    deleteGroup
+    deleteGroup,
+    updateGroup
 } from "../controllers/chat-controller.js"
 import { authorizationHandler } from '../utils/authorizationHandler.js';
 
@@ -31,5 +32,7 @@ router.get('/joinGroup/:groupId', authorizationHandler, joinGroup) // join a gro
 router.post('/addMember', authorizationHandler, addGroupMember) // add member
 
 router.delete('/delete-group/:groupId', authorizationHandler, deleteGroup) // delete group
+
+router.put('/update-group/:groupId', authorizationHandler, updateGroup) // update group
 
 export default router;

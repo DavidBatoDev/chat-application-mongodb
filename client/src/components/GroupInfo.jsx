@@ -28,8 +28,6 @@ const GroupInfo = () => {
     const {socket} = useSelector(state => state.socket)
     const [chatInfo, setChatInfo] = useState(null)
 
-    console.log(message)
-
     const fetchChat = async (chatId) => {
         try {
             dispatch(startLoading());
@@ -124,6 +122,7 @@ const GroupInfo = () => {
                 {chatInfo?.groupAdmin._id === user._id && (
                     <div className='flex items-center w-full gap-2'>
                         <button 
+                            onClick={() => navigate(`/app/edit-group/${chatId}`)}
                             className='flex-1 text-lg dark-secondary rounded-full px-3 py-2 w-full '>
                             Edit Group
                         </button>
