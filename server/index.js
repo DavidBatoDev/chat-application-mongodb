@@ -98,30 +98,7 @@ io.on('connection', (socket) => {
         console.log('new chat', chat)
         try {
             for (const user of chat.users) {
-                io.to(user._id).emit('update chat', chat);
-            }
-        } catch (error) {
-            console.log(error)
-            socket.emit('error', {message: 'Error sending message'})
-        }
-    })
-
-    socket.on('delete chat', async (chat) => {
-        try {
-            for (const user of chat.users) {
-                console.log('emit delete chat to', user)
-                io.to(user).emit('delete sidebar chat', chat);
-            }
-        } catch (error) {
-            console.log(error)
-            socket.emit('error', {message: 'Error sending message'})
-        }
-    })
-
-    socket.on('remove chat to user', async (data) => {
-        try {
-            for (const user of data.users) {
-                io.to(user).emit('delete sidebar chat', data.chat);
+                io.to(user._id).emit('new chat', chat);
             }
         } catch (error) {
             console.log(error)
@@ -132,7 +109,31 @@ io.on('connection', (socket) => {
     socket.on('add chat to user', async (data) => {
         try {
             for (const user of data.users) {
-                io.to(user).emit('update chat', data.chat);
+                io.to(user).emit('enable chat', data.chat);
+                io.to(user).emit('new chat', data.chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
+    socket.on('delete chat', async (chat) => {
+        try {
+            for (const user of chat.users) {
+                io.to(user).emit('delete chat', chat);
+            }
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
+    socket.on('remove chat to user', async (data) => {
+        try {
+            for (const user of data.users) {
+                io.to(user).emit('disabled chat', data.chat);
+                io.to(user).emit('delete chat', data.chat);
             }
         } catch (error) {
             console.log(error)

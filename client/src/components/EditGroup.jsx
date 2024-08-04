@@ -1,12 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import XIcon from '@mui/icons-material/X';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import LinkIcon from '@mui/icons-material/Link';
 import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
 import {
@@ -189,21 +185,23 @@ const EditGroup = () => {
     const handleSaveChanges = async e => {
         e.preventDefault();
         try {
+            dispatch(startLoading());
             const token = JSON.parse(localStorage.getItem('authToken'));
             const body = {
                 chatName: formBody.chatName,
                 chatImage: formBody.chatImage,
                 users: formBody.users
             }
-            console.log(formBody.users)
             const res = await axios.put(`/api/chat/update-group/${chatId}`, body, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            if (res.data?.success === false) return dispatch(setError(res.data.message));
-            console.log(res.data.usersThatIsRemoved)
-            console.log(res.data.usersThatIsAdded)
+            if (res.data?.success === false) {
+                dispatch(setError(res.data.message));
+                dispatch(stopLoading());
+                return
+            }
             if (res.data.usersThatIsRemoved.length > 0) {
                 const data = {
                     chat: res.data.chat,
@@ -218,6 +216,36 @@ const EditGroup = () => {
                 }
                 socket.emit('add chat to user', data);
             }
+            let message = `${user.name} changed the group info`;
+            const nameOfTheUserRemoved = res.data.usersThatIsRemoved.map(user => {
+                return fetchedUsers.find(u => u._id === user).name
+            }).join(', ');
+            const nameOfTheUserAdded = res.data.usersThatIsAdded.map(user => {
+                return fetchedUsers.find(u => u._id === user).name
+            }).join(', ');
+            
+            if (nameOfTheUserRemoved) {
+                message += ` and removed ${nameOfTheUserRemoved} from the group`;
+            }
+            if (nameOfTheUserAdded) {
+                message += ` and added ${nameOfTheUserAdded} to the group`;
+            }
+            const resForSendMessage = await axios.post(`/api/message`, {
+              content: message,
+              chatId: chatId
+            }, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            })
+            if (resForSendMessage.data?.success === false) {
+                dispatch(stopLoading())
+                dispatch(setError(resForSendMessage.data.message));
+                return
+            }
+            socket.emit('new message', resForSendMessage.data);
+            dispatch(clearError());
+            dispatch(stopLoading());
             navigate(`/app/chat/${chatId}`);
         } catch (error) {
             console.log(error.response.data)

@@ -48,12 +48,12 @@ const Sidebar = () => {
   useEffect(() => {
     if (!socket) return;
   
-    socket.on('update chat', (chat) => {
+    socket.on('new chat', (chat) => {
       setConvos((prevConvos) => [chat, ...prevConvos]);
     });
 
-    socket.on('delete sidebar chat', (chat) => {
-      console.log('delete chat', chat);
+
+    socket.on('delete chat', (chat) => {
       setConvos((prevConvos) => prevConvos.filter((convo) => convo._id !== chat._id));
     });
   
@@ -84,8 +84,8 @@ const Sidebar = () => {
     });
   
     return () => {
-      socket.off('update chat');
-      socket.off('delete sidebar chat');
+      socket.off('new chat');
+      socket.off('delete chat');
       socket.off('sort convo');
       socket.off('update message');
     };

@@ -32,7 +32,7 @@ const ChatArea = () => {
   const {darkMode} = useSelector(state => state.theme)
   const {message} = useSelector(state => state.error)
   const {socket} = useSelector(state => state.socket)
-  const testError = 'Testing Error!'
+  const [disabledChat, setDisabledChat] = useState(false)
 
   // scroll to latest message
   useEffect(() => {
@@ -42,11 +42,31 @@ const ChatArea = () => {
   // socket message received
   useEffect(() => {
     if (!socket) return
+    const isMember = chatInfo?.users.find(u => u._id === user._id)
+    if (!isMember) {
+      setDisabledChat(true)
+    }
+    setDisabledChat(false)
+
+    socket.on('disabled chat', (chat) => {
+      if (chat._id === chatId) {
+        setDisabledChat(true)
+      }
+    })
+
+    socket.on('enable chat', (chat) => {
+      if (chat._id === chatId) {
+        setDisabledChat(false)
+      }
+    });
+
     socket.on('message received', (message) => {
       setMessages(prevState => [...prevState, message])
     })
     return () => {
       socket.off('message received')
+      socket.off('update chat')
+      socket.off('disabled chat')
     }
   }, [chatId, socket])
 
@@ -83,6 +103,7 @@ const ChatArea = () => {
         setLoading(false)
       } catch (error) {
         console.log(error.response.data)
+        dispatch(setError('Chat not found'))
     }}
     fetchMessages()
 
@@ -102,7 +123,8 @@ const ChatArea = () => {
   const handleSendMessage = async () => {
     try {
       if (isGroupChat) {
-        const isMember = chatInfo.users.find(u => u._id === user._id)
+        const isMember = chatInfo?.users.find(u => u._id === user._id)
+        console.log(isMember)
         if (!isMember) return dispatch(setError('You are not a member of this group'))
       }
       if (!text.trim()) return
@@ -199,32 +221,41 @@ const ChatArea = () => {
             )
           }
         </div>
+        {
+          disabledChat ? (
+            <div className='flex justify-center items-center bg-red-100 text-red-500 p-5 mb-3 rounded-xl mt-3'>
+              <p>You are not allowed to chat in this group</p>
+            </div>
+          ) : (
+            <div className={`${darkMode && 'dark-primary'} flex items-center my-3 shadow p-3 rounded-xl overflow-hidden w-full bg-white`}>
+            <textarea 
+              type="text"
+              disabled={disabledChat}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+              placeholder='Message...' 
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                '&::-webkit-scrollbar': {
+                  display: 'none' 
+                }
+              }}
+              className={`bg-transparent flex-1 h-10 resize-none text-wrap py-3 outline-none overflow-visible`} />
+            
+            <IconButton disabled={loading || disabledChat} onClick={handleSendMessage}>
+              <SendIcon className='text-slate-500' />
+            </IconButton>
+          </div>
+          )
+        }
 
-        <div className={`${darkMode && 'dark-primary'} flex items-center my-3 shadow p-3 rounded-xl overflow-hidden w-full bg-white`}>
-          <textarea 
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-            placeholder='Message...' 
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              '&::-webkit-scrollbar': {
-                display: 'none' 
-              }
-            }}
-            className={`bg-transparent flex-1 h-10 resize-none text-wrap py-3 outline-none overflow-visible`} />
-          
-          <IconButton disabled={loading} onClick={handleSendMessage}>
-            <SendIcon className='text-slate-500' />
-          </IconButton>
-        </div>
    </div>
   )
 }

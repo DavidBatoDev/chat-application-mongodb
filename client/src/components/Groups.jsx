@@ -26,14 +26,26 @@ const Groups = () => {
     const [search, setSearch] = useState('')
 
     const fetchGroups = async () => {
-        const token = JSON.parse(localStorage.getItem("authToken") || null)
-        if (!token) return
-        const res = await axios.get(`/api/user/fetchGroups?search=${search}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        try {
+            dispatch(clearError())
+            if (!search) {
+                setGroups([])
+                return
             }
-        })
-        setGroups(res.data)
+            const token = JSON.parse(localStorage.getItem("authToken") || null)
+            if (!token) return
+            const res = await axios.get(`/api/user/fetchGroups?search=${search}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            setGroups(res.data)
+            console.log(res.data)
+        }
+        catch (error) {
+            console.log(error)
+        }
+
     }
     
     useEffect(() => {
