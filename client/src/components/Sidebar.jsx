@@ -111,7 +111,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className={`hidden md:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
+    <div className={`hidden sm:block h-full bg-slate-300 flex-[0.3] ${darkMode && 'dark-secondary'}`}>
       {/* nav */}
       <nav className={`${darkMode && 'dark-primary'} flex justify-between items-center my-5 mx-2 rounded-xl p-3 bg-white`}>
         <div onClick={() => navigate('/app/profile')} className='flex items-center'>

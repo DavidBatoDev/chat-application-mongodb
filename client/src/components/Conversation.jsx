@@ -68,7 +68,7 @@ const Conversation = ({ currentChat, convo, isHighlighted, onConversationClick }
   return (
     <div
       onClick={() => onConversationClick(convo._id)}
-      className={`flex items-center md:px-5 py-3 gap-2 relative
+      className={`flex items-center sm:px-5 py-3 gap-2 relative
         ${darkMode ? 'hover:bg-gray-800 active:bg-gray-600' : 'hover:bg-slate-300 active:bg-slate-100'} 
         cursor-pointer`}
     >

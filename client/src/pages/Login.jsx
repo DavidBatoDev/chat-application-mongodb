@@ -1,73 +1,78 @@
-import {useState, useEffect} from 'react'
-import { useSelector } from 'react-redux'
-import {Link} from 'react-router-dom'
-import axios from 'axios'
-import { useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 import {
   loginStart,
   loginSuccess,
   loginFailure,
   clearError
-} from '../redux/userSlice/userSlice'
-import { useNavigate } from 'react-router-dom'
-import { Backdrop } from '@mui/material'
-import { CircularProgress } from '@mui/material'
-import Alert from '@mui/material/Alert'
+} from '../redux/userSlice/userSlice';
+import { useNavigate } from 'react-router-dom';
+import { Backdrop, CircularProgress, Alert } from '@mui/material';
 
 const Login = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formBody, setFormBody] = useState({
     email: '',
     password: ''
-  })
-  const {user, loading, error} = useSelector(state => state.user)
+  });
+  const { user, loading, error } = useSelector(state => state.user);
+  const { darkMode } = useSelector(state => state.theme);
 
   useEffect(() => {
-    () => dispatch(clearError())
-  }, [])
+    // Cleanup error message on component mount
+    dispatch(clearError());
+  }, [dispatch]);
 
   useEffect(() => {
-    user && navigate('/app/chat')
-  }, [user])
+    if (user) {
+      if (window.innerWidth > 768) {
+        navigate('/app/chat');
+      } else {
+        navigate('/nav');
+      }
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setFormBody({
       ...formBody,
       [e.target.name]: e.target.value
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      dispatch(loginStart())
-      const res = await axios.post('api/auth/login', formBody)
-      const data = res.data
-      if (!data.success ) {
-        dispatch(loginFailure(data))
-        return
+      dispatch(loginStart());
+      const res = await axios.post('/api/auth/login', formBody);
+      const data = res.data;
+      if (!data.success) {
+        dispatch(loginFailure(data));
+        return;
       }
-      localStorage.setItem("authToken", JSON.stringify(data.token))
-      dispatch(loginSuccess(data))
-      if (window.innerWidth > 768) {
-        navigate('/app/chat')
+      localStorage.setItem("authToken", JSON.stringify(data.token));
+      dispatch(loginSuccess(data));
+      // Navigate based on the window width
+      if (window.innerWidth > 500) {
+        navigate('/app/chat');
       } else {
-        navigate('/nav')
+        navigate('/nav');
       }
     } catch (error) {
-      console.log(error.response.data)
-      dispatch(loginFailure(error.response.data.message))
+      console.log(error.response.data);
+      dispatch(loginFailure(error.response.data.message));
     }
-  }
+  };
 
-  const {darkMode} = useSelector(state => state.theme)
   return (
     <div className={`${darkMode && 'dark-primary'} h-full w-full flex justify-center items-center bg-slate-200`}>
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loading}
-        >
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
       {error && (
@@ -75,14 +80,14 @@ const Login = () => {
           <Alert className='transition-opacity' severity="error">{error}</Alert>
           <button onClick={() => dispatch(clearError())} className='text-red-300'>x</button>
         </div>
-        )}
+      )}
       <div className='flex h-[90%] w-[90%] flex-col md:flex-row'>
         <div className='flex-1 flex flex-col justify-center items-center rounded'>
           <img 
             src="/logo-draft.png" 
             alt="Logo"
             className='md:w-72 md:h-72 h-56 w-56'
-            />
+          />
           <h1 className={`${darkMode && 'text-blue-300'} text-3xl font-semibold text-blue-700`}>
             Full stack chat app
           </h1>
@@ -134,7 +139,7 @@ const Login = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

@@ -31,7 +31,7 @@ const Profile = () => {
             if (res.status === 201) {
                 socket.emit('user offline', res.data.userId);
             } else {
-                console.error('Unexpected status code:', res.status);
+                console.log('Unexpected status code:', res.status);
             }
             dispatch(logout());
             localStorage.removeItem('authToken');
