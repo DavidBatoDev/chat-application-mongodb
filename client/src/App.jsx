@@ -16,9 +16,10 @@ import EditProfile from './components/EditProfile'
 import EditGroup from './components/EditGroup'
 import User from './components/User'
 import GroupInfo from './components/GroupInfo'
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
+import axios from 'axios'
 import { 
   initializeSocket,
   disconnectSocket
@@ -31,6 +32,51 @@ const App = () => {
   const { darkMode } = useSelector(state => state.theme)
   const {socket} = useSelector(state => state.socket)
   
+  // make the user online
+  const handleUserOnline = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem('authToken'));
+  
+      const res = await axios.get(`/api/user/is-online`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      if (res.status === 201) {
+        socket.emit('user online', res.data.userId);
+      } else {
+        console.log('error', res.status);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+
+  // make the user offline
+  const handleUserOffline = async () => {
+    try {
+      const token = JSON.parse(localStorage.getItem('authToken'));
+  
+      const res = await axios.get(`/api/user/is-offline`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+  
+      if (res.status === 201) {
+        socket.emit('user offline', res.data.userId);
+      } else {
+        console.error('Unexpected status code:', res.status);
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+  
+
   // socket connection (initialization)
   useEffect(() => {
     dispatch(initializeSocket('http://localhost:5000'))
@@ -43,8 +89,12 @@ const App = () => {
   useEffect(() => {
     if (!user || !socket) return
     socket.emit('setup', {data: user})
+
+    handleUserOnline()
+
     socket.on('connection', () => {
-      setSocketConnectionStatus(!socketConnectionStatus)
+      setSocketConnectionStatus(true)
+      handleUserOnline()
     })
 
     socket.on('connected', () => {
@@ -52,10 +102,19 @@ const App = () => {
     })
 
     socket.on('disconnect', () => {
+      socket.emit('user offline', user._id)
       setSocketConnectionStatus(false)
     })
 
+    const handleUnload = () => {
+      handleUserOffline();
+    };
+
+    window.addEventListener('beforeunload', handleUnload);
+
     return () => {
+      handleUserOffline();
+      window.removeEventListener('unload', handleUnload);
       socket.off('connection')
       socket.off('connected')
       socket.off('disconnect')

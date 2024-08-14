@@ -88,6 +88,7 @@ const Groups = () => {
                   dispatch(setError(resForSendMessage.data.message));
                   return
               }
+            socket.emit('new message', resForSendMessage.data)
             navigate(`/app/chat/${groupId}`)
         } catch (error) {
             dispatch(stopLoading())

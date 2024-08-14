@@ -115,7 +115,7 @@ const Sidebar = () => {
       {/* nav */}
       <nav className={`${darkMode && 'dark-primary'} flex justify-between items-center my-5 mx-2 rounded-xl p-3 bg-white`}>
         <div onClick={() => navigate('/app/profile')} className='flex items-center'>
-          <IconButton>
+          <IconButton className='relative'>
             <img src={user?.profilePic} alt="" 
             className='w-7 h-7 rounded-full object-cover'/>
           </IconButton>

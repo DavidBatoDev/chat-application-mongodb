@@ -1,5 +1,7 @@
 import express from 'express';
 import {
+    isOnline,
+    isOffline,
     fetchUser,
     fetchUsers,
     fetchGroups,
@@ -10,6 +12,10 @@ import {
 import { authorizationHandler } from '../utils/authorizationHandler.js'
 
 const router = express.Router();
+
+router.get('/is-online', authorizationHandler, isOnline);
+
+router.get('/is-offline', authorizationHandler, isOffline);
 
 router.get('/fetchUser', authorizationHandler, fetchUser);
 

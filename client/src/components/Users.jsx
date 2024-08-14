@@ -79,7 +79,10 @@ const Users = () => {
                     {users.length > 0 && users.map(user => (
                         <div onClick={() => navigate(`/app/user/${user._id}`)} key={user._id} className={`cursor-pointer flex items-center py-3 border-b-2 ${darkMode ? "hover:bg-slate-700" : "hover:bg-slate-200"} rounded-xl px-3`}>
                             <div className='flex items-center gap-2'>
-                                <AccountCircleIcon className='text-slate-400'/>
+                                <div className='h-10 w-10 relative border rounded-full'>
+                                    <image src={user?.profilePic} alt="profile" className='h-full w-full object-cover rounded-full' />
+                                    <div className={`${user.isOnline ? 'flex' : 'hidden'} absolute w-3 h-3 bg-green-500 rounded-full right-0 bottom-0`}></div>
+                                </div>
                                 {user.name}
                             </div>
                         </div>

@@ -60,35 +60,44 @@ const io = new Server(server, {
 
 app.set('socketio', io);
 
+// socket.io events
 io.on('connection', (socket) => {
     socket.on('setup', (user) => {
         if (user?.data?._id) {
+            socket.userId = user.data._id;
             socket.join(user.data._id);
             socket.emit('connected');
-            console.log(`User ${user.data._id} connected and joined their room.`);
         } else {
             console.error('User data is missing or malformed:', user);
             socket.emit('error', { message: 'Invalid user data for setup.' });
         }
     });
 
+    // when a user is online
+    socket.on('user online', async (userId) => {
+        try {
+            console.log('80 server user online', userId)
+            socket.broadcast.emit('user online', userId);
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    // when a user joins a chat room
     socket.on('join chat', (chatId) => {
-        console.log('joining chat ', chatId)
         socket.join(chatId)
     })
 
+    // when a user leaves a chat room
     socket.on('leave chat', (chatId) => {
-        console.log('leaving chat ', chatId);
         socket.leave(chatId);
     });
 
+    // when a new message is sent
     socket.on('new message', async (messageStatus) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
         try {
-            // sending to individual users who are part of the chat
-            // socket.emit('message received', messageStatus);
-            // sending to all users in chat room
             io.to(chat._id).emit('message received', messageStatus);
             for (const user of chat.users) {
                 io.to(user._id).emit('update message', messageStatus);
@@ -124,7 +133,7 @@ io.on('connection', (socket) => {
         }
     })
         
-
+    // when a new chat is created
     socket.on('new chat', async (chat) => {
         console.log('new chat', chat)
         try {
@@ -176,7 +185,9 @@ io.on('connection', (socket) => {
     })
 
     socket.on('disconnect', () => {
-        console.log('user disconnected')
+        const userId = socket.userId;
+        socket.broadcast.emit('user offline', userId);
+        
         socket.rooms.forEach(room => {
             socket.leave(room);
         });

@@ -2,6 +2,50 @@ import User from '../models/user-model.js'
 import Chat from '../models/chat-model.js'
 import { errorHandler } from '../utils/errorHandler.js';
 
+
+export const isOnline = async (req, res, next) => {
+    const currentUserId = req.user._id;
+    try {
+        const user = await User.findById(currentUserId);
+    
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+    
+        user.isOnline = true;
+    
+        await user.save();
+
+        const userId = currentUserId.toString();
+
+        res.status(201).json({userId, isOnline: true});
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const isOffline = async (req, res, next) => {
+    const currentUserId = req.user._id;
+    try {
+        const user = await User.findById(currentUserId);
+
+        if (!user) {
+            return res.status(404).json({message: 'User not found'});
+        }
+
+        user.isOnline = false;
+
+        await user.save();
+
+        const userId = currentUserId.toString();
+
+        res.status(201).json({userId, isOnline: false});
+    }
+    catch (error) {
+        next(error);
+    }
+}
+
 export const fetchUser = async (req, res) => {
     try {
         if (!req.user) {
