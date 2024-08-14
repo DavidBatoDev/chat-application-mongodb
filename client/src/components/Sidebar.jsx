@@ -39,24 +39,34 @@ const Sidebar = () => {
     }
   };
 
+  // Fetch the user's chat when the component mounts
   useEffect(() => {
     if (!user) return;
     fetchUsersChat();
     localStorage.getItem('highlightedConvos') && setHighlightedConvos(JSON.parse(localStorage.getItem('highlightedConvos')));
   }, []);
 
+  // Listen for socket events
   useEffect(() => {
     if (!socket) return;
   
+    // Listen for the new chat event, which is emitted when a new chat is created, a user is added to a chat or a user creates a new chat
     socket.on('new chat', (chat) => {
       setConvos((prevConvos) => [chat, ...prevConvos]);
+      setHighlightedConvos(prevState => [...prevState, chat._id]);
+      localStorage.setItem('highlightedConvos', JSON.stringify([...highlightedConvos, chat._id]));
+      console.log('new chat', chat);
     });
 
-
+    // deleting a chat from the sidebar, which is emitted when a chat is deleted, a user leaves a chat or was removed from a chat
     socket.on('delete chat', (chat) => {
+      console.log('delete chat', chat);
       setConvos((prevConvos) => prevConvos.filter((convo) => convo._id !== chat._id));
+      setHighlightedConvos((prevState) => prevState.filter(id => id !== chat._id));
+      localStorage.setItem('highlightedConvos', JSON.stringify(highlightedConvos.filter(id => id !== chatId)));
     });
   
+    // Listen for the sort convo event, which is emitted when a new message is sent
     socket.on('sort convo', (message) => {
       setConvos((prevConvos) => {
         const updatedConvos = prevConvos.map((convo) => {
@@ -76,6 +86,7 @@ const Sidebar = () => {
       });
     });
   
+    // Listen for the update message event, which is emitted when a new message is sent
     socket.on('update message', (message) => {
       if (message.sender._id !== user._id && message.chat._id !== currentChat) {
         setHighlightedConvos(prevState => [...prevState, message.chat._id]);

@@ -58,11 +58,19 @@ const io = new Server(server, {
     pingTimeout: 60000,
 });
 
+app.set('socketio', io);
+
 io.on('connection', (socket) => {
     socket.on('setup', (user) => {
-        socket.join(user.data._id)
-        socket.emit('connected')
-    })
+        if (user?.data?._id) {
+            socket.join(user.data._id);
+            socket.emit('connected');
+            console.log(`User ${user.data._id} connected and joined their room.`);
+        } else {
+            console.error('User data is missing or malformed:', user);
+            socket.emit('error', { message: 'Invalid user data for setup.' });
+        }
+    });
 
     socket.on('join chat', (chatId) => {
         console.log('joining chat ', chatId)
@@ -94,6 +102,29 @@ io.on('connection', (socket) => {
         }
     })
 
+    // when a user joins a group
+    socket.on('join group', async (data) => {
+        try {
+            console.log('server 108 join group', data)
+            io.to(data.userId).emit('new chat', data.groupChat);
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+
+    // when a user leaves a group
+    socket.on('leave group', async (data) => {
+        try {
+            console.log('server 120 leave group', data)
+            io.to(data.userId).emit('delete chat', data.chat);
+        } catch (error) {
+            console.log(error)
+            socket.emit('error', {message: 'Error sending message'})
+        }
+    })
+        
+
     socket.on('new chat', async (chat) => {
         console.log('new chat', chat)
         try {
@@ -106,6 +137,7 @@ io.on('connection', (socket) => {
         }
     })
 
+    // when a user was added to a chat
     socket.on('add chat to user', async (data) => {
         try {
             for (const user of data.users) {
@@ -118,6 +150,7 @@ io.on('connection', (socket) => {
         }
     })
 
+    // when a chat was deleted
     socket.on('delete chat', async (chat) => {
         try {
             for (const user of chat.users) {
@@ -129,6 +162,7 @@ io.on('connection', (socket) => {
         }
     })
 
+    // when a user was removed from a chat
     socket.on('remove chat to user', async (data) => {
         try {
             for (const user of data.users) {

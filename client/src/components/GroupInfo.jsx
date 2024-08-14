@@ -45,6 +45,31 @@ const GroupInfo = () => {
         }
     };
 
+    const handleLeftGroup = async () => {
+        try {
+            dispatch(clearError());
+            dispatch(startLoading());
+            const token = JSON.parse(localStorage.getItem('authToken'));
+            const res = await axios.get(`/api/chat/leftGroup/${chatId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(res)
+            dispatch(stopLoading());
+            if (res.status === 200) {
+                socket.emit('leave group', res.data);
+                socket.emit('new message', res.data.message);
+                navigate('/app/groups');
+                return
+            }
+            console.log(res.data);
+        } catch (error) {
+            dispatch(stopLoading());
+            dispatch(setError(error.response.data.message));
+        }
+    };
+
     const handleDeleteGroup = async () => {
         try {
             dispatch(startLoading());
@@ -59,6 +84,7 @@ const GroupInfo = () => {
             socket.emit('delete chat', res.data.chat);
         } catch (error) {
             dispatch(stopLoading());
+            console,log(error)
             dispatch(setError(error.response.data.message));
         }
     };
@@ -167,6 +193,7 @@ const GroupInfo = () => {
                             </>
                         ) : (
                             <button 
+                                onClick={handleLeftGroup}
                                 className='md:text-lg rounded-full h-10 px-3 w-full bg-red-400 text-sm'>Leave Group</button>
                         )
                     }

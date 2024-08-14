@@ -25,7 +25,7 @@ router.get('/fetchChat/:userId', authorizationHandler, fetchChat); // fetch chat
 
 router.post('/createGroup', authorizationHandler, createGroup); // create a group
 
-router.post('/leftGroup:groupId', authorizationHandler, leftGroup); // left a group
+router.get('/leftGroup/:groupId', authorizationHandler, leftGroup); // left a group
 
 router.get('/joinGroup/:groupId', authorizationHandler, joinGroup) // join a group
 

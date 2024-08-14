@@ -11,7 +11,7 @@ export const authorizationHandler = async (req, res, next) => {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decodedToken.userId);
         if (!user) {
-            return next(errorHandler(401, 'Not authorized'));
+            return next(errorHandler(401, 'User not found'));
         }
         req.user = user;
         next()

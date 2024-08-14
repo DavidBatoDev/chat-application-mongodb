@@ -162,8 +162,14 @@ export const createGroup = async (req, res, next) => {
 }
 
 export const leftGroup = async (req, res, next) => {
-    const {groupId} = req.params
-    const {userId} = req.body.id
+    const currentUserId = req.user._id
+    const { groupId } = req.params
+
+    const user = await User.findById(currentUserId)
+
+    if (!user) {
+        return next(errorHandler(400, "User not found'"))
+    }
 
     if (!groupId) {
         return next(errorHandler(400, "Group ID is required"))
@@ -176,12 +182,38 @@ export const leftGroup = async (req, res, next) => {
             return res.status(404).json({message: 'Group Chat not found'})
         }
 
-        const groupUsers = groupChat.users.filter(id => userId.toString() !== id.toString())
+        const groupUsers = groupChat.users.filter(id => currentUserId.toString() !== id.toString())
 
         groupChat.users = groupUsers
+        
+        const recipients = groupChat.users.filter(id => currentUserId.toString() != id.toString())
+        const newMessage = new Message({
+            chat: groupChat._id,
+            sender: currentUserId,
+            reciever: recipients,
+            content: `${user.name} has left the group`
+        })
+        let message = await newMessage.save()
+        message = await Message.findById(message._id)
+            .populate("sender", "name")
+            .populate({
+                path: 'chat',
+                populate: {
+                    path: 'users',
+                    select: 'name email'
+                }
+            });
+        message = await User.populate(message, {
+            path: 'reciever',
+            select: 'name email'
+        })
+        
+        await Chat.findByIdAndUpdate(groupChat._id, {latestMessage: message})
         await groupChat.save()
 
-        res.status(200).json(groupChat)
+        console.log(`Emitting remove chat event for user ${currentUserId} and chat ${groupChat._id}`);
+
+        res.status(200).json({chat: groupChat, message: message, userId: currentUserId})
     } catch (error) {
         next(error)
     }

@@ -24,6 +24,8 @@ const Groups = () => {
     const {message, loading} = useSelector(state => state.error)
     const [groups, setGroups] = useState([])
     const [search, setSearch] = useState('')
+    const {user} = useSelector(state => state.user)
+    const {socket} = useSelector(state => state.socket)
 
     const fetchGroups = async () => {
         try {
@@ -64,12 +66,28 @@ const Groups = () => {
                 }
             })
             console.log(res.data)
-            if (!res.data.success) {
+            if (res.status !== 200) {
+                console.log('error')
                 dispatch(stopLoading())
                 dispatch(setError(res.data.message))
                 return
             }
+            const groupChat = res.data
+            socket.emit('join group', {groupChat, userId: user._id})
             dispatch(stopLoading())
+            const resForSendMessage = await axios.post(`/api/message`, {
+                content: `${user.name} joined the group!`,
+                chatId: res.data._id
+              }, {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              })
+              if (resForSendMessage.data?.success === false) {
+                  dispatch(stopLoading())
+                  dispatch(setError(resForSendMessage.data.message));
+                  return
+              }
             navigate(`/app/chat/${groupId}`)
         } catch (error) {
             dispatch(stopLoading())
