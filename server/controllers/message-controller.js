@@ -9,6 +9,7 @@ export const sendMessage = async (req, res, next) => {
     try {
         if (!currentUserId) {
             next(errorHandler(400, "Not authorized"))
+            return
         }
         if (!content || !chatId) {
             return next(errorHandler(400, "Data is not sufficient"))

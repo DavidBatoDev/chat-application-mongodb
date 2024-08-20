@@ -76,7 +76,6 @@ io.on('connection', (socket) => {
     // when a user is online
     socket.on('user online', async (userId) => {
         try {
-            console.log('80 server user online', userId)
             socket.broadcast.emit('user online', userId);
         } catch (error) {
             console.log(error)
@@ -98,11 +97,12 @@ io.on('connection', (socket) => {
         let chat = messageStatus.chat
         if (!chat.users) return console.log('users not found')
         try {
-            io.to(chat._id).emit('message received', messageStatus);
+            // send only to the chat room not self
+            socket.to(chat._id).emit('message received', messageStatus);
             for (const user of chat.users) {
                 io.to(user._id).emit('update message', messageStatus);
                 io.to(user._id).emit('sort convo', messageStatus);
-                io.to(user._id).emit('update latest', messageStatus);
+                // io.to(user._id).emit('update latest', messageStatus);
             }
 
         } catch (error) {

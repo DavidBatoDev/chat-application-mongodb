@@ -32,9 +32,12 @@ const ChatArea = () => {
   const { message } = useSelector(state => state.error);
   const { socket } = useSelector(state => state.socket);
   const [disabledChat, setDisabledChat] = useState(false);
+  const [sendingMessages, setSendingMessages] = useState([]);
+
 
   // useEffect to fetch messages and chat info and listen for socket events
   useEffect(() => {
+    setSendingMessages([]);
     if (!socket) return;
 
     // fetch messages and chat info
@@ -120,6 +123,7 @@ const ChatArea = () => {
       setChatInfo(null);
       setIsOnline(false);
       setLoading(false);
+      setSendingMessages([]);
       dispatch(clearError());
     };
   }, [chatId, friendId, socket, user._id, prevChatId, dispatch]);
@@ -127,16 +131,26 @@ const ChatArea = () => {
   // for scrolling to the latest message
   useEffect(() => {
     latestMessage.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, sendingMessages]);
 
   // Send message functionality
   const handleSendMessage = async () => {
+    if (!text.trim()) return;
+    const tempId = Date.now().toString();
+    const tempMessage = {
+      _id: tempId,
+      content: text,
+      sender: user,
+      status: 'sending'
+    }
+    setSendingMessages(prevState => [...prevState, tempMessage]);
+    setText('');
     try {
       if (isGroupChat) {
         const isMember = chatInfo?.users.find(u => u._id === user._id);
         if (!isMember) return dispatch(setError('You are not a member of this group'));
       }
-      if (!text.trim()) return;
+
       const token = JSON.parse(localStorage.getItem('authToken'));
       const res = await axios.post(`/api/message`, {
         content: text,
@@ -144,17 +158,23 @@ const ChatArea = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setText('');
-      if (res.data?.success === false) {
+      if (res.status != 200) {
         dispatch(setError(res.data.message));
+        // updateMessageStatus(tempId, 'error')
+        setSendingMessages(sendingMessages.filter(msg => msg._id !== tempId));
+        setMessages([...messages, { ...tempMessage, status: 'error' }]);
         return;
       }
+      setSendingMessages(sendingMessages.filter(msg => msg._id !== tempId));
+      setMessages(prevState => [...prevState, res.data]);
       socket.emit('new message', res.data);
     } catch (error) {
       dispatch(setError('Message not sent'));
+      // updateMessageStatus(tempId, 'error');
+      setSendingMessages(sendingMessages.filter(msg => msg._id !== tempId));
+      setMessages([...messages, { ...tempMessage, status: 'error' }]);
     }
   };
-
   const handleViewChatProfile = () => {
     if (isGroupChat) {
       navigate(`/app/group-info/${chatId}`);
@@ -162,6 +182,13 @@ const ChatArea = () => {
       const friend = chatInfo.users.find(u => u._id !== user._id);
       navigate(`/app/user/${friend._id}`);
     }
+  };
+  const updateMessageStatus = (tempId, status) => {
+    setSendingMessages(prev =>
+      prev.map(msg =>
+        msg._id === tempId ? { ...msg, status } : msg
+      )
+    );
   };
 
   return (
@@ -212,6 +239,9 @@ const ChatArea = () => {
               {messages.map(message => (
                 message.sender._id === user._id ? <MessageSelf key={message._id} message={message} /> : <MessageOthers key={message._id} message={message} />
               ))}
+              {sendingMessages.map(message =>
+                <MessageSelf key={message._id} message={message} />
+              )}
               <div ref={latestMessage} />
             </div>
           </div>
