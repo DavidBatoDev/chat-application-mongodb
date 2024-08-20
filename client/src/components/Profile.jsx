@@ -70,9 +70,6 @@ const Profile = () => {
                             <small className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{user?.email}</small>
                         </div>
                         <div className='flex gap-2'>
-                            <button className={`text-lg rounded-full px-3 py-2 w-full ${darkMode ? 'bg-gray-600 text-white' : 'bg-gray-300 text-black'}`}>
-                                Add Status
-                            </button>
                             <button
                                 onClick={() => navigate('/app/edit-profile')}
                                 className={`text-lg rounded-full px-3 py-2 w-full ${darkMode ? 'bg-gray-600 text-white' : 'bg-gray-300 text-black'}`}>
