@@ -6,6 +6,21 @@ import { useSelector } from 'react-redux';
 const MessageOthers = ({message}) => {
   const {darkMode} = useSelector(state => state.theme)
 
+  const modifiedTime = () => {
+    // if more than 1 day show date plus time
+    if (new Date().getDate() - new Date(message.createdAt).getDate() > 0) {
+      return new Date(message.createdAt).toLocaleString([], {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      })
+    } else {
+      return new Date(message.createdAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+  }
+
   return (
     <div className={`flex items-center my-3 w-full`}>
         <div className={`flex flex-row items-center`}>
@@ -20,7 +35,7 @@ const MessageOthers = ({message}) => {
               {message.content}
             </p>
             <span className='flex justify-end text-xs text-gray-400'>
-              today
+              {modifiedTime()}
             </span>
         </div>
         </div>

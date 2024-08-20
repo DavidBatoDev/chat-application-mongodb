@@ -5,6 +5,24 @@ import { FiClock, FiAlertCircle } from 'react-icons/fi'; // Icons for sending an
 const MessageSelf = ({ message }) => {
   const { darkMode } = useSelector((state) => state.theme);
 
+  const modifiedTime = () => {
+    // if more than 1 day show date plus time
+    if (message.createdAt === undefined) {
+      return '...'
+    }
+    if (new Date().getDate() - new Date(message.createdAt).getDate() > 0) {
+      return new Date(message.createdAt).toLocaleString([], {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      })
+    } else {
+      return new Date(message.createdAt).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+  }
+
   return (
     <div className={`flex items-center my-3 w-full justify-end`}>
       <div className={`flex flex-row-reverse justify-start items-center`}>
@@ -12,7 +30,7 @@ const MessageSelf = ({ message }) => {
           <p className={`text-sm md:text-md break-all`}>
             {message.content}
           </p>
-          <span className='flex justify-end text-xs text-gray-400'>today</span>
+          <span className='flex justify-end text-xs text-gray-400'>{modifiedTime()}</span>
           
           {/* Visual indication for sending or error states */}
           {message?.status === 'sending' && (
