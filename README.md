@@ -32,7 +32,7 @@ This project is a full-featured chat application built with the MERN stack (Mong
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/chat-application.git
+    git clone https://github.com/DavidBatoDev/chat-application-mongodb.git
     cd chat-application
     ```
 
