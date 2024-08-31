@@ -204,7 +204,7 @@ const EditProfile = () => {
                 </IconButton>
                 </div>
                 <div className=' flex flex-col items-center w-full gap-5 md:px-2 lg:px-10'>
-                    <div className={`relative dark-secondary rounded-full mt-12 w-32 h-32`}>
+                    <div className={`relative ${darkMode && 'dark-secondary'} bg-slate-200 rounded-full mt-12 w-32 h-32`}>
                         <input hidden type="file" ref={fileRef} onChange={e => setFile(e.target.files[0])} accept='images/*' />
                         <img 
                             src={formBody?.profilePic || user?.profilePic} alt="profile-pic" 
@@ -224,13 +224,13 @@ const EditProfile = () => {
                     </div>
                     
                     <div className={`
-                        dark-secondary w-full rounded-xl flex flex-col gap-3 p-3
+                        ${darkMode && 'dark-secondary'} bg-slate-200 w-full rounded-xl flex flex-col gap-3 p-3
                     `}>
                         <div>
                             <div className='flex flex-col gap-2'>
                                 <label className='font-semibold'>Edit Username: </label>
                                 <input 
-                                    className='text-xl font-semibold w-full dark-primary p-2 rounded outline-none'
+                                    className={`${darkMode ? 'bg-slate-800' : 'bg-slate-100 '} text-xl font-semibold w-full p-2 rounded outline-none`}
                                     type="text"
                                     name='name'
                                     defaultValue={user?.name}
@@ -240,12 +240,12 @@ const EditProfile = () => {
                     </div>
 
                     <div className={`
-                        dark-secondary w-full rounded-xl flex p-3 flex-col gap-5
+                        ${darkMode && 'dark-secondary'} bg-slate-200 w-full rounded-xl flex p-3 flex-col gap-5
                     `}>
                         <div className='flex flex-col gap-2'>
                             <label className='font-semibold'>Edit About Me:</label>
                             <textarea 
-                                className='dark-primary w-full h-24 p-2 rounded outline-none'
+                                className={`${darkMode ? 'bg-slate-800' : 'bg-slate-100 '} w-full h-24 p-2 rounded outline-none`}
                                 defaultValue={user?.aboutMe}
                                 name='aboutMe'
                                 onChange={handleChange}
@@ -270,13 +270,13 @@ const EditProfile = () => {
                                     </div>
                                 ))}
                                 <div>
-                                    <button type='button' className='text-lg dark-primary rounded-full px-3 py-2 w-full' onClick={openModal}>Add Social</button>
+                                    <button type='button' className={`text-lg bg-slate-200 ${darkMode && 'dark-secondary bg-slate-900'} border border-black rounded-full px-3 py-2 w-full`} onClick={openModal}>Add Social</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className='flex gap-2'>
-                        <button type='submit' className='text-lg rounded-full px-10 py-2 w-full dark-secondary mb-3'>Save Changes</button>
+                        <button type='submit' className={`${darkMode && 'dark-secondary'} bg-slate-200 text-lg rounded-full px-10 py-2 w-full mb-3`}>Save Changes</button>
                     </div>
                 </div>
             </form>

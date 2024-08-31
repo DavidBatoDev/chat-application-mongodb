@@ -79,7 +79,7 @@ export const fetchUsers = async (req, res) => {
         const search = req.query.search || '';
         let users;
         if (search === '') {
-            users = await User.find({ _id: { $ne: req.user._id } });
+            users = [];
         } else {
             users = await User.find({ name: { $regex: search, $options: 'i' }, _id: { $ne: req.user._id } });
         }

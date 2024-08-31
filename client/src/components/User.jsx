@@ -68,14 +68,14 @@ const User = () => {
               </IconButton>
             </div>
             <div className=' flex flex-col items-center w-full gap-5 md:px-2 lg:px-10 pb-40'>
-                <div className={`relative dark-secondary rounded-full mt-12 w-32 h-32`}>
+                <div className={`${darkMode && 'dark-secondary'} bg-slate-200 relative rounded-full mt-12 w-32 h-32`}>
                     <img 
                         src={userInfo?.profilePic}
                         alt="Profile" 
                         className='w-32 h-32 object-cover rounded-full cursor-pointer'/>
                 </div>
                 <div className={`
-                    dark-secondary w-full rounded-xl h-46 flex justify-between items-center gap-3 p-3
+                    ${darkMode && 'dark-secondary'} bg-slate-200 w-full rounded-xl h-46 flex justify-between items-center gap-3 p-3
                 `}>
                     <div>
                         <h1 className='text-2xl font-semibold'>{userInfo?.name}</h1>
@@ -89,7 +89,7 @@ const User = () => {
                 </div>
 
                 <div className={`
-                    dark-secondary w-full rounded-xl flex p-3 flex-col gap-5
+                   ${darkMode && 'dark-secondary'} bg-slate-200 w-full rounded-xl flex p-3 flex-col gap-5
                 `}>
                     {userInfo?.aboutMe && (
                         <div>

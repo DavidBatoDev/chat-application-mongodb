@@ -37,7 +37,7 @@ export const sendMessage = async (req, res, next) => {
             });
         message = await User.populate(message, {
             path: 'reciever',
-            select: 'name email'
+            select: 'name email profilePic'
         })
 
         await Chat.findByIdAndUpdate(chatId, {latestMessage: message})
@@ -61,13 +61,13 @@ export const fetchMessages = async (req, res, next) => {
         }
 
         let messages = await Message.find({chat: chatId})
-            .populate("sender", "name")
+            .populate("sender", "profilePic")
 
         messages = await Chat.populate(messages, {
             path: "chat",
             populate: {
                 path: "users",
-                select: "name email"
+                select: "name email profilePic isOnline"
             }
         })
 

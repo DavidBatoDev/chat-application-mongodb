@@ -21,11 +21,16 @@ const MessageOthers = ({message}) => {
     }
   }
 
+  console.log(message.sender)
+
   return (
     <div className={`flex items-center my-3 w-full`}>
         <div className={`flex flex-row items-center`}>
         <IconButton>
-            <AccountCircleIcon className='text-slate-500' />
+          <img 
+            src={message.sender?.profilePic}
+            className='w-10 h-10 rounded-full border'
+            alt="" />
         </IconButton>
         <div className={`${darkMode && 'dark-secondary'} flex flex-col bg-slate-300 p-2 rounded-xl  min-w-56 max-w-40 md:max-w-72 lg:max-w-96`}>
             <h1 className='font-semibold'>
